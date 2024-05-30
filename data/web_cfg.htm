@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            max-width: 500px;
+            min-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .maintablist {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            display:flex;
+        }
+
+        .maintablist button {
+            background-color: inherit;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 5px;
+            flex: 1;
+            text-align: center;
+            transition: 0.3s;
+            border-right: 1px solid #ccc;
+        }
+
+        .maintablist button:hover {
+            background-color: #ddd;
+        }
+
+        .maintablist button.active {
+            background-color: #ccc;
+        }
+
+        .maintabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .leveltabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .leveltablist {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            display:flex;
+        }
+
+        .leveltablist button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 5px;
+            transition: 0.3s;
+            flex: 1;
+            border-right: 1px solid #ccc;
+        }
+
+        .leveltablist button:hover {
+            background-color: #ddd;
+        }
+
+        .leveltablist button.active {
+            background-color: #ccc;
+        }
+
+        .outtablist {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            display:flex
+        }
+
+        .outtablist button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 5px;
+            transition: 0.3s;
+            flex: 1;
+            border-right: 1px solid #ccc;
+        }
+
+        .outtablist button:hover {
+            background-color: #ddd;
+        }
+
+        .outtablist button.active {
+            background-color: #ccc;
+        }
+
+        .outtabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
+        .striptablist {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            display:flex;
+        }
+
+        .striptablist button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 5px 5px;
+            transition: 0.3s;
+            flex: 1;
+            border-right: 1px solid #ccc;
+        }
+
+        .striptablist button:hover {
+            background-color: #ddd;
+        }
+
+        .striptablist button.active {
+            background-color: #ccc;
+        }
+
+        .striptabcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        
+        .displayblock > * {
+            display: block;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+
+        .gridcontainer {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            grid-gap: 10px;
+            margin: 0 auto;
+        }
+
+        .fieldlabel {
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        .gridselect {
+            grid-column: span 2;
+            max-width: 100px;
+        }
+
+        .buttoncontainer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+    </style>
+    <title>Light Configuration</title>
+</head>
+<body>
+    <div id="loadingScreen" class="loadingscreen">
+        <h1>Loading...</h1>
+    </div>
+
+    <div id="container" class="container">
+        <h1>Light Configuration</h1>
+        <form id="configForm" action="" method="post" onsubmit="return confirmSubmit()">
+            <div class="maintablist">
+                <button type="button" class="maintablinks active" onclick="openTab(event,'main','input')">Input</button>
+                <button type="button" class="maintablinks" onclick="openTab(event,'main','options')">Options</button>
+                <button type="button" class="maintablinks" onclick="openTab(event,'main','levels')">Levels</button>
+                <button type="button" class="maintablinks" onclick="openTab(event,'main','out')">OUT</button>
+                <button type="button" class="maintablinks" onclick="openTab(event,'main','strip')">Strip</button>
+            </div>
+
+            <div id="input" class="maintabcontent show">
+                <div>
+                    <div class="row gridcontainer">
+                        <label for="signal_type" style="cursor:pointer;" title="Type of signal lightcontroller should expect to recieve" class="fieldlabel">Signal Type:</label>
+                        <label>
+                            <input type="radio" name="signal_type" value="crsf" %INPUT_SIGNAL_TYPE_CRSF%>
+                            CRSF
+                        </label>
+                        <label>
+                            <input type="radio" name="signal_type" value="sbus" %INPUT_SIGNAL_TYPE_SBUS%>
+                            SBUS
+                        </label>
+                    </div>
+        
+                    <div class="row gridcontainer">
+                        <label for="trigger_channel" style="cursor:pointer;" title="Light controller will be enabled when this channel is set high. Must be a different channel than level channel." class="fieldlabel">Trigger Channel:</label>
+                        <select name="trigger_channel" id="trigger_channel" class="gridselect">
+                            <option value="10" %INPUT_TRIGGER_CHANNEL_10%>10</option>
+                            <option value="11" %INPUT_TRIGGER_CHANNEL_11%>11</option>
+                            <option value="12" %INPUT_TRIGGER_CHANNEL_12%>12</option>
+                            <option value="13" %INPUT_TRIGGER_CHANNEL_13%>13</option>
+                            <option value="14" %INPUT_TRIGGER_CHANNEL_14%>14</option>
+                            <option value="15" %INPUT_TRIGGER_CHANNEL_15%>15</option>
+                            <option value="16" %INPUT_TRIGGER_CHANNEL_16%>16</option>
+                        </select>
+                    </div>
+        
+                    <div class="row gridcontainer">
+                        <label for="level_channel" style="cursor:pointer;" title="Used to select 1 of 3 light levels based on this channel being set low/medium/high. Must be a different channel than trigger channel." class="fieldlabel">Level Select Channel:</label>
+                        <select name="level_channel" id="level_channel" class="gridselect">
+                            <option value="10" %INPUT_LEVEL_CHANNEL_10%>10</option>
+                            <option value="11" %INPUT_LEVEL_CHANNEL_11%>11</option>
+                            <option value="12" %INPUT_LEVEL_CHANNEL_12%>12</option>
+                            <option value="13" %INPUT_LEVEL_CHANNEL_13%>13</option>
+                            <option value="14" %INPUT_LEVEL_CHANNEL_14%>14</option>
+                            <option value="15" %INPUT_LEVEL_CHANNEL_15%>15</option>
+                            <option value="16" %INPUT_LEVEL_CHANNEL_16%>16</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="options" class="maintabcontent hide">
+                <div class="displayblock">
+                    <label for="invert_steer" style="cursor:pointer;" title="Invert if turn signals are backwards, assumed to be channel 1">
+                        <input type="checkbox" name="invert_steer" id="invert_steer" %OPTIONS_INVERT_STEERING%>
+                        Invert Steering
+                    </label>
+                    <label for="invert_throttle" style="cursor:pointer;" title="Invert if brake lights come on during throttle, assumed to be channel 2">
+                        <input type="checkbox" name="invert_throttle" id="invert_throttle" %OPTIONS_INVERT_ESC%>
+                        Invert Throttle
+                    </label>
+                    <label for="enable_turnsignals" style="cursor:pointer;" title="Enable turnsignals when turning">
+                        <input type="checkbox" name="enable_turnsignals" id="enable_turnsignals" %OPTIONS_ENABLE_TURN_SIGNALS%>
+                        Enable Turn Signals
+                    </label>
+                    <label for="turnsignals_as_head" style="cursor:pointer;" title="Front turnsignals should also be treated as head lights">
+                        <input type="checkbox" name="turnsignals_as_head" id="turnsignals_as_head" %OPTIONS_TURN_SIGNALS_HEAD%>
+                        Turn Signals as Head Lights
+                    </label>
+                    <label for="turnsignals_as_brake" style="cursor:pointer;" title="Rear turn signals should also be treated as brake liights">
+                        <input type="checkbox" name="turnsignals_as_brake" id="turnsignals_as_brake" %OPTIONS_TURN_SIGNS_BRAKE%>
+                        Turn Signals as Brake Lights
+                    </label>
+                    <label for="enable_hazards" style="cursor:pointer;" title="Hazards will flash if inactive for 30 seconds">
+                        <input type="checkbox" name="enable_hazards" id="enable_hazards" %OPTIONS_ENABLE_HAZARDS%>
+                        Enable Hazard Lights
+                    </label>
+                    <label for="enable_flashing" style="cursor:pointer;" title="Enable strobe between 2 groups of lights">
+                        <input type="checkbox" name="enable_flashing" id="enable_flashing" %OPTIONS_ENABLE_FLASH%>
+                        Enable Flashing Lights
+                    </label>
+                </div>
+            </div>
+
+            <div id="levels" class="maintabcontent hide">
+                <div class="leveltablist">
+                    <button type="button" class="leveltablinks active" onclick="openTab(event,'level','level1')">Level 1</button>
+                    <button type="button" class="leveltablinks" onclick="openTab(event,'level','level2')">Level 2</button>
+                    <button type="button" class="leveltablinks" onclick="openTab(event,'level','level3')">Level 3</button>
+                </div>
+
+                <div id="level1" class="leveltabcontent displayblock show active">
+                    <label for="level_1_hazards" style="cursor:pointer;" title="Hazards will be active on level 1">
+                        <input type="checkbox" name="level_1_hazards" id="level_1_hazards" %LEVEL_1_HAZARDS%>
+                        Hazard Lights
+                    </label>
+                    <label for="level_1_turn" style="cursor:pointer;" title="Turn signals will be active on level 1">
+                        <input type="checkbox" name="level_1_turn" id="level_1_turn" %LEVEL_1_TURN%>
+                        Turn Signals
+                    </label>
+                    <label for="level_1_brake" style="cursor:pointer;" title="Brake lights will be active on level 1">
+                        <input type="checkbox" name="level_1_brake" id="level_1_brake" %LEVEL_1_BRAKE%>
+                        Brake Lights
+                    </label>
+                    <label for="level_1_head" style="cursor:pointer;" title="Head lights will be active on level 1">
+                        <input type="checkbox" name="level_1_head" id="level_1_head" %LEVEL_1_HEAD%>
+                        Head Lights
+                    </label>
+                    <label for="level_1_flashing" style="cursor:pointer;" title="Flashing will be active on level 1">
+                        <input type="checkbox" name="level_1_flashing" id="level_1_flashing" %LEVEL_1_FLASHING%>
+                        Flashing Lights
+                    </label>
+                    <label for="level_1_drift" style="cursor:pointer;" title="Drift light will be active on level 1">
+                        <input type="checkbox" name="level_1_drift" id="level_1_drift" %LEVEL_1_DRIFT%>
+                        Drift Lights
+                    </label>
+                    <label for="level_1_underglow" style="cursor:pointer;" title="Underglow will be active on level 1">
+                        <input type="checkbox" name="level_1_underglow" id="level_1_underglow" %LEVEL_1_UNDERGLOW%>
+                        Underglow
+                    </label>
+                    <label for="level_1_aux" style="cursor:pointer;" title="Aux lights will be active on level 1">
+                        <input type="checkbox" name="level_1_aux" id="level_1_aux" %LEVEL_1_AUX%>
+                        Aux Lights
+                    </label>
+                    <label for="level_1_exhaust" style="cursor:pointer;" title="Exhast will be active on level 1">
+                        <input type="checkbox" name="level_1_exhaust" id="level_1_exhaust" %LEVEL_1_EXHAUST%>
+                        Exhaust Flame
+                    </label>
+                </div>
+
+                <div id="level2" class="leveltabcontent displayblock hide ">
+                    <label for="level_2_hazards" style="cursor:pointer;" title="Hazards will be active on level 2">
+                        <input type="checkbox" name="level_2_hazards" id="level_2_hazards" %LEVEL_2_HAZARDS%>
+                        Hazard Lights
+                    </label>
+                    <label for="level_2_turn" style="cursor:pointer;" title="Turn signals will be active on level 2">
+                        <input type="checkbox" name="level_2_turn" id="level_2_turn" %LEVEL_2_TURN%>
+                        Turn Signals
+                    </label>
+                    <label for="level_2_brake" style="cursor:pointer;" title="Brake lights will be active on level 2">
+                        <input type="checkbox" name="level_2_brake" id="level_2_brake" %LEVEL_2_BRAKE%>
+                        Brake Lights
+                    </label>
+                    <label for="level_2_head" style="cursor:pointer;" title="Head lights will be active on level 2">
+                        <input type="checkbox" name="level_2_head" id="level_2_head" %LEVEL_2_HEAD%>
+                        Head Lights
+                    </label>
+                    <label for="level_2_flashing" style="cursor:pointer;" title="Flashing will be active on level 2">
+                        <input type="checkbox" name="level_2_flashing" id="level_2_flashing" %LEVEL_2_FLASHING%>
+                        Flashing Lights
+                    </label>
+                    <label for="level_2_drift" style="cursor:pointer;" title="Drift light will be active on level 2">
+                        <input type="checkbox" name="level_2_drift" id="level_2_drift" %LEVEL_2_DRIFT%>
+                        Drift Lights
+                    </label>
+                    <label for="level_2_underglow" style="cursor:pointer;" title="Underglow will be active on level 2">
+                        <input type="checkbox" name="level_2_underglow" id="level_2_underglow" %LEVEL_2_UNDERGLOW%>
+                        Underglow
+                    </label>
+                    <label for="level_2_aux" style="cursor:pointer;" title="Aux lights will be active on level 2">
+                        <input type="checkbox" name="level_2_aux" id="level_2_aux" %LEVEL_2_AUX%>
+                        Aux Lights
+                    </label>
+                    <label for="level_2_exhaust" style="cursor:pointer;" title="Exhasut will be active on level 2">
+                        <input type="checkbox" name="level_2_exhaust" id="level_2_exhaust" %LEVEL_2_EXHAUST%>
+                        Exhaust Flame
+                    </label>
+                </div>
+
+                <div id="level3" class="leveltabcontent displayblock hide">
+                    <label for="level_3_hazards" style="cursor:pointer;" title="Hazards will be active on level 3">
+                        <input type="checkbox" name="level_3_hazards" id="level_3_hazards" %LEVEL_3_HAZARDS%>
+                        Hazard Lights
+                    </label>
+                    <label for="level_3_turn" style="cursor:pointer;" title="Turn signals will be active on level 3">
+                        <input type="checkbox" name="level_3_turn" id="level_3_turn" %LEVEL_3_TURN%>
+                        Turn Signals
+                    </label>
+                    <label for="level_3_brake" style="cursor:pointer;" title="Brake lights will be active on level 3">
+                        <input type="checkbox" name="level_3_brake" id="level_3_brake" %LEVEL_3_BRAKE%>
+                        Brake Lights
+                    </label>
+                    <label for="level_3_head" style="cursor:pointer;" title="Head lights will be active on level 3">
+                        <input type="checkbox" name="level_3_head" id="level_3_head" %LEVEL_3_HEAD%>
+                        Head Lights
+                    </label>
+                    <label for="level_3_flashing" style="cursor:pointer;" title="Flashing will be active on level 3">
+                        <input type="checkbox" name="level_3_flashing" id="level_3_flashing" %LEVEL_3_FLASHING%>
+                        Flashing Lights
+                    </label>
+                    <label for="level_3_drift" style="cursor:pointer;" title="Drift light will be active on level 3">
+                        <input type="checkbox" name="level_3_drift" id="level_3_drift" %LEVEL_3_DRIFT%>
+                        Drift Lights
+                    </label>
+                    <label for="level_3_underglow" style="cursor:pointer;" title="Underglow will be active on level 3">
+                        <input type="checkbox" name="level_3_underglow" id="level_3_underglow" %LEVEL_3_UNDERGLOW%>
+                        Underglow
+                    </label>
+                    <label for="level_3_aux" style="cursor:pointer;" title="Aux lights will be active on level 3">
+                        <input type="checkbox" name="level_3_aux" id="level_3_aux" %LEVEL_3_AUX%>
+                        Aux Lights
+                    </label>
+                    <label for="level_3_exhaust" style="cursor:pointer;" title="Exhaust will be active on level 3">
+                        <input type="checkbox" name="level_3_exhaust" id="level_3_exhaust" %LEVEL_3_EXHAUST%>
+                        Exhaust Flame
+                    </label>
+                </div>
+            </div>
+
+            <div id="out" class="maintabcontent hide">
+                <div class="outtablist">
+                    <button type="button" class="outtablinks active" onclick="openTab(event,'out','out1')">OUT 1</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out2')">OUT 2</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out3')">OUT 3</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out4')">OUT 4</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out5')">OUT 5</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out6')">OUT 6</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out7')">OUT 7</button>
+                    <button type="button" class="outtablinks" onclick="openTab(event,'out','out8')">OUT 8</button>
+                </div>
+                <div id="out1" class="outtabcontent displayblock show active">
+                    <label for="out_1_type" style="cursor:pointer;" title="Position of LED attached to led OUT_1">
+                        Type:
+                        <select name="out_1_type" id="out_1_type">
+                            <option value="right_head" %OUT_1_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_1_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_1_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_1_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_1_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_1_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_1_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_1_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_1_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_1_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_1_flash_group" value="0" %OUT_1_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_1_flash_group" value="1" %OUT_1_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_1_flash_group" value="2" %OUT_1_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out2" class="outtabcontent displayblock hide">
+                    <label for="out_2_type" style="cursor:pointer;" title="Position of LED attached to led OUT_2">
+                        Type:
+                        <select name="out_2_type" id="out_2_type">
+                            <option value="right_head" %OUT_2_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_2_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_2_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_2_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_2_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_2_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_2_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_2_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_2_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_2_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_2_flash_group" value="0" %OUT_2_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_2_flash_group" value="1" %OUT_2_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_2_flash_group" value="2" %OUT_2_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out3" class="outtabcontent displayblock hide">
+                    <label for="out_3_type" style="cursor:pointer;" title="Position of LED attached to led OUT_3">
+                        Type:
+                        <select name="out_3_type" id="out_3_type">
+                            <option value="right_head" %OUT_3_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_3_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_3_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_3_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_3_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_3_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_3_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_3_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_3_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_3_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_3_flash_group" value="0" %OUT_3_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_3_flash_group" value="1" %OUT_3_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_3_flash_group" value="2" %OUT_3_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out4" class="outtabcontent displayblock hide">
+                    <label for="out_4_type" style="cursor:pointer;" title="Position of LED attached to led OUT_4">
+                        Type:
+                        <select name="out_4_type" id="out_4_type">
+                            <option value="right_head" %OUT_4_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_4_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_4_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_4_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_4_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_4_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_4_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_4_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_4_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_4_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_4_flash_group" value="0" %OUT_4_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_4_flash_group" value="1" %OUT_4_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_4_flash_group" value="2" %OUT_4_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out5" class="outtabcontent displayblock hide">
+                    <label for="out_5_type" style="cursor:pointer;" title="Position of LED attached to led OUT_5">
+                        Type:
+                        <select name="out_5_type" id="out_5_type">
+                            <option value="right_head" %OUT_5_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_5_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_5_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_5_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_5_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_5_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_5_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_5_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_5_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_5_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_5_flash_group" value="0" %OUT_5_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_5_flash_group" value="1" %OUT_5_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_5_flash_group" value="2" %OUT_5_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out6" class="outtabcontent displayblock hide">
+                    <label for="out_6_type" style="cursor:pointer;" title="Position of LED attached to led OUT_6">
+                        Type:
+                        <select name="out_6_type" id="out_6_type">
+                            <option value="right_head" %OUT_6_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_6_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_6_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_6_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_6_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_6_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_6_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_6_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_6_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_6_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_6_flash_group" value="0" %OUT_6_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_6_flash_group" value="1" %OUT_6_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_6_flash_group" value="2" %OUT_6_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out7" class="outtabcontent displayblock hide">
+                    <label for="out_7_type" style="cursor:pointer;" title="Position of LED attached to led OUT_7">
+                        Type:
+                        <select name="out_7_type" id="out_7_type">
+                            <option value="right_head" %OUT_7_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_7_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_7_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_7_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_7_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_7_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_7_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_7_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_7_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_7_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_7_flash_group" value="0" %OUT_7_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_7_flash_group" value="1" %OUT_7_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_7_flash_group" value="2" %OUT_7_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+                <div id="out8" class="outtabcontent displayblock hide">
+                    <label for="out_8_type" style="cursor:pointer;" title="Position of LED attached to led OUT_8">
+                        Type:
+                        <select name="out_8_type" id="out_8_type">
+                            <option value="right_head" %OUT_8_RIGHT_HEAD%>Right Head</option>
+                            <option value="left_head" %OUT_8_LEFT_HEAD%>Left Head</option>
+                            <option value="right_front_turn" %OUT_8_RIGHT_FRONT_TURN%>Right Front Turn</option>
+                            <option value="left_front_turn" %OUT_8_LEFT_FRONT_TURN%>Left Front Turn</option>
+                            <option value="right_brake" %OUT_8_RIGHT_BRAKE%>Right Brake</option>
+                            <option value="left_brake" %OUT_8_LEFT_BRAKE%>Left Brake</option>
+                            <option value="right_rear_turn" %OUT_8_RIGHT_REAR_TURN%>Right Rear Turn</option>
+                            <option value="left_rear_turn" %OUT_8_LEFT_REAR_TURN%>Left Rear Turn</option>
+                            <option value="aux" %OUT_8_AUX%>Aux</option>
+                        </select>
+                    </label>
+                    <div>
+                        <label for="out_8_flash_group" style="cursor:pointer;" title="Flash alternatives between flash group(1,2,1,2,1,2,ect...)">Flash Group:</label>
+                        <label>
+                            <input type="radio" name="out_8_flash_group" value="0" %OUT_8_FLASH_GROUP_0%>
+                            None
+                        </label>
+                        <label>
+                            <input type="radio" name="out_8_flash_group" value="1" %OUT_8_FLASH_GROUP_1%>
+                            Group 1
+                        </label>
+                        <label>
+                            <input type="radio" name="out_8_flash_group" value="2" %OUT_8_FLASH_GROUP_2%>
+                            Group 2
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="strip" class="maintabcontent hide">
+                <div class="maintablist">
+                    <button type="button" class="striptablinks active" onclick="openTab(event,'strip','strip1')">Strip 1</button>
+                    <button type="button" class="striptablinks" onclick="openTab(event,'strip','strip2')">Strip 2</button>
+                    <button type="button" class="striptablinks" onclick="openTab(event,'strip','strip3')">Strip 3</button>
+                </div>
+                <div id="strip1" class="striptabcontent displayblock show">
+                    <label for="strip_1_type" style="cursor:pointer;" title="Type of LED strip attached to STRIP1">
+                        Type:
+                        <select name="strip_1_type" id="strip_1_type">
+                            <option value="drift_light" %STRIP_1_DRIFT_TYPE%>Drift Light</option>
+                            <option value="underglow" %STRIP_1_UNDERGLOW_TYPE%>UnderGlow</option>
+                            <option value="exhaust" %STRIP_1_EXHAUST_TYPE%>Exhaust Flame</option>
+                        </select>
+                    </label>
+
+                    <div id="strip_1_drift_light_fields" class="displayblock">
+                        <label for="strip_1_drift_led" style="cursor:pointer;" title="Number of leds in the drift light strip">
+                            Number Drift Leds:
+                            <input type="number" id="strip_1_drift_led" name="strip_1_drift_led" min="1" max="100" value="%STRIP_1_NUM_LEDS%"/>
+                        </label>
+        
+                        <label for="strip_1_drift_type" style="cursor:pointer;" title="Start of drift light animation">
+                            Drift Start:
+                            <select name="strip_1_drift_type" id="strip_1_drift_type">
+                                <option value="middle_out" %STRIP_1_DRIFT_MIDDLE%>Middle Out</option>
+                                <option value="front_to_back" %STRIP_1_DRIFT_FRONT%>Front To Back</option>
+                                <option value="back_to_front" %STRIP_1_DRIFT_BACK%>Back To Front</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="strip_1_underglow_fields" class="displayblock">
+                        <label for="strip_1_color" style="cursor:pointer;" title="Color of STRIP_1 underglow">
+                            Underglow Color:
+                            <input type="color" id="strip_1_color" name="strip_1_color" value="%STRIP_1_UNDERGLOW_COLOR%">
+                        </label>
+                    </div>
+
+                    <div id="strip_1_exhaust_fields" class="displayblock"></div>
+                </div>
+                <div id="strip2" class="striptabcontent displayblock hide">
+                    <label for="strip_2_type" style="cursor:pointer;" title="Type of LED strip attached to STRIP_2">
+                        Type:
+                        <select name="strip_2_type" id="strip_2_type">
+                            <option value="drift_light" %STRIP_2_DRIFT_TYPE%>Drift Light</option>
+                            <option value="underglow" %STRIP_2_UNDERGLOW_TYPE%>UnderGlow</option>
+                            <option value="exhaust" %STRIP_2_EXHAUST_TYPE%>Exhaust Flame</option>
+                        </select>
+                    </label>
+
+                    <div id="strip_2_drift_light_fields" class="displayblock">
+                        <label for="strip_2_drift_led" style="cursor:pointer;" title="Number of leds in the drift light strip">
+                            Number Drift Leds:
+                            <input type="number" id="strip_2_drift_led" name="strip_2_drift_led" min="1" max="100" value="%STRIP_2_NUM_LEDS%"/>
+                        </label>
+        
+                        <label for="strip_2_drift_type" style="cursor:pointer;" title="Start of drift light animation">
+                            Drift Start:
+                            <select name="strip_2_drift_type" id="strip_2_drift_type">
+                                <option value="middle_out" %STRIP_2_DRIFT_MIDDLE%>Middle Out</option>
+                                <option value="front_to_back" %STRIP_2_DRIFT_FRONT%>Front To Back</option>
+                                <option value="back_to_front" %STRIP_2_DRIFT_BACK%>Back To Front</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="strip_2_underglow_fields" class="displayblock">
+                        <label for="strip_2_color" style="cursor:pointer;" title="Color of STRIP_2 underglow">
+                            Underglow Color:
+                            <input type="color" id="strip_2_color" name="strip_2_color" value="%STRIP_2_UNDERGLOW_COLOR%">
+                        </label>
+                    </div>
+
+                    <div id="strip_2_exhaust_fields" class="displayblock"></div>
+
+                </div>
+                <div id="strip3" class="striptabcontent displayblock hide">
+                    <label for="strip_3_type" style="cursor:pointer;" title="Type of LED strip attached to STRIP_3">
+                        Type:
+                        <select name="strip_3_type" id="strip_3_type">
+                            <option value="drift_light" %STRIP_3_DRIFT_TYPE%>Drift Light</option>
+                            <option value="underglow" %STRIP_3_UNDERGLOW_TYPE%>UnderGlow</option>
+                            <option value="exhaust" %STRIP_3_EXHAUST_TYPE%>Exhaust Flame</option>
+                        </select>
+                    </label>
+
+                    <div id="strip_3_drift_light_fields" class="displayblock">
+                        <label for="strip_3_drift_led" style="cursor:pointer;" title="Number of leds in the drift light strip">
+                            Number Drift Leds:
+                            <input type="number" id="strip_3_drift_led" name="strip_3_drift_led" min="1" max="100" value="%STRIP_3_NUM_LEDS%"/>
+                        </label>
+        
+                        <label for="strip_3_drift_type" style="cursor:pointer;" title="Start of drift light animation">
+                            Drift Start:
+                            <select name="strip_3_drift_type" id="strip_3_drift_type">
+                                <option value="middle_out" %STRIP_3_DRIFT_MIDDLE%>Middle Out</option>
+                                <option value="front_to_back" %STRIP_3_DRIFT_FRONT%>Front To Back</option>
+                                <option value="back_to_front" %STRIP_3_DRIFT_BACK%>Back To Front</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div id="strip_3_underglow_fields" class="displayblock">
+                        <label for="strip_3_color" style="cursor:pointer;" title="Color of STRIP_3 underglow">
+                            Underglow Color:
+                            <input type="color" id="strip_3_color" name="strip_3_color" value="%STRIP_3_UNDERGLOW_COLOR%">
+                        </label>
+                    </div>
+                    
+                    <div id="strip_3_exhaust_fields" class="displayblock"></div>
+                </div>
+            </div>
+
+            <div class="buttoncontainer">
+                <input type="button" value="Load Defaults" onclick="loadDefaults();">
+                <input type="button" value="Reset" onclick="if(confirm('Are you sure you want to reload the page? Unapplied settings will be lost.')) location.reload();">
+                <input type="button" value="Apply" onclick="submitFormAsJson()">
+            </div>
+        </form>
+    </div>
+    <script>
+        function loadDefaults() {
+            if(confirm('Are you sure you want to load the default settings? Controller will restart.')) {
+                fetch('/loadDefaults', { method: 'POST' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        location.reload();
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+            }
+        }
+
+        function submitFormAsJson() {
+            var r = confirm("Are you sure you want to apply all changes (including changes on currently hidden tabs)? Controller will restart.");
+            if (r == true) {
+                var form = document.getElementById('configForm');
+                var formData = new FormData(form);
+                var jsonData = {};
+
+                for (var pair of formData.entries()) {
+                jsonData[pair[0]] = pair[1];
+                }
+
+                fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonData)
+                });
+            }
+        }
+
+        function openTab(evt, type, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName(type+"tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.replace("show","hide");
+            }
+            tablinks = document.getElementsByClassName(type+"tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).classList.replace("hide","show");
+            evt.currentTarget.className += " active";
+        }
+
+        window.onload = function() {
+            ['strip_1_type', 'strip_2_type', 'strip_3_type'].forEach(function(id) {
+                var select = document.getElementById(id);
+                select.addEventListener('change', function() {
+                    var value = this.value;
+                    ['drift_light', 'underglow', 'exhaust'].forEach(function(type) {
+                        var lookupId = id.replace('type', type + '_fields');
+                        var div = document.getElementById(lookupId);
+                        if (div) {
+                            div.style.display = (value === type) ? 'block' : 'none';
+                        }
+                    });
+                });
+                select.dispatchEvent(new Event('change'));
+            });
+
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('container').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
