@@ -2,91 +2,76 @@
 #define CONFIG_H
 #include "Arduino.h"
 #include <FastLED.h>
+#include <Preferences.h>
 
 //led strip configs
-#define COLOR_ORDER GRB
+#define COLOR_ORDER RGB
 #define CHIPSET WS2812B
 #define VOLTS 5
 #define MAX_AMPS 500 //value in milliamps
-#define BRIGHTNESS 60
+#define BRIGHTNESS 100
 
-#define SIGNAL_TYPE CRSF
+//OUTPUT CONFIG
+#define MAX_CHANNELS 12
 
-//CRSF config
-//990-1500-2011
-#define ESC_DEADZONE 20// Small deadzone so lights turn off
-#define TURN_FLEX_RANGE 400// More distance from center before turn signals enabled
-#define FLEX_RANGE 100 //Distance from midpoint before update acknowleded
-#define CRSF_LOW 990
-#define CRSF_MID 1500
-#define CRSF_HIGH 2011
+#define OUTPUT_PIN_1 32
+#define OUTPUT_PIN_2 33
+#define OUTPUT_PIN_3 25
+#define OUTPUT_PIN_4 26
+#define OUTPUT_PIN_5 27
+#define OUTPUT_PIN_6 14
+#define OUTPUT_PIN_7 12
+#define OUTPUT_PIN_8 13
+#define OUTPUT_PIN_9 4
+#define OUTPUT_PIN_10 5
+#define OUTPUT_PIN_11 18
+#define OUTPUT_PIN_12 19
+const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};//TODO Confirm Pins
 
-//channels configs
+#define NUM_STRIP_LEDS 100
+
+//INPUT CONFIG
 #define STEER_CHANNEL 1
 #define ESC_CHANNEL 2
 #define SYSTEM_ENABLE_CHANNEL 10
 #define LIGHT_LEVEL_CHANNEL 11
 
-#define INVERT_ESC false
-#define INVERT_STEER true
+#define INPUT_THRESHOLD 20
+#define LEVEL_THRESHOLD 200
+#define TURN_THRESHOLD 400
+#define INPUT_LOW 0
+#define INPUT_MID 500 //0-499 is low, 500 is mid, 501-1000 is high
+#define INPUT_HIGH 1000
 
-//pinout configs
-#define NUM_LIGHT_OUTPUTS 8
-#define NUM_FLASH_GROUPS 3 //2 + off = 3
+//CRSF CONFIG
+#define CRSF_LOW 990
+#define CRSF_MID 1500
+#define CRSF_HIGH 2011
+#define CRSF_DEADZONE 20
 
-//SLC v1.1 stacked
-#define LIGHT_OUT_1 32
-#define LIGHT_OUT_2 33
-#define LIGHT_OUT_3 25
-#define LIGHT_OUT_4 26
+#define TIME_TIL_FLASH 5000
+#define TURN_FLASH_INTERVAL 500
+#define STROBE_FLASH_INTERVAL 100
 
-#define LIGHT_OUT_5 27
-#define LIGHT_OUT_6 14
-#define LIGHT_OUT_7 12
-#define LIGHT_OUT_8 13 
-
-#define NUM_STRIPS 3
-#define STRIP_OUT_1 4
-#define STRIP_OUT_2 5
-#define STRIP_OUT_3 18
-// #define STRIP_OUT_4 4
-
-#define NUM_STRIP_LEDS 50
-
-//control configs
 #define NUM_LEVELS 3
-#define ENABLE_DRIFT_LIGHT true
-#define ENABLE_UNDERGLOW true
 
-#define ENABLE_TURNSIGNALS true
-#define TURN_SIGNAL_ALSO_BRAKE true
-#define TURN_SIGNAL_ALSO_HEAD true
-
-#define ENABLE_HAZARDS true
-#define ENABLE_FLASH false
-#define HAZARD_TIME 500
-#define FLASH_TIME 500
-#define IDLE_TIME 30000
-
-#define ENABLE_EXHAUST true
-#define NUM_EXHAUST_HISTORY 10
 #define MAX_EXHAUST_INTENSITY 1000
 
-#define POP_EXHAUST_LEVEL (((CRSF_HIGH - CRSF_MID) / 100) * 90) + CRSF_MID
+#define POP_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 90) + INPUT_MID
 #define MAX_START_POP_EXHAUST_INTENSITY 1000
 #define MIN_START_POP_EXHAUST_INTENSITY 950
 #define MAX_CHANGE_POP_EXHAUST_INTENSITY 100 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_POP_EXHAUST_INTENSITY 50 //value is halfed on increase, full value used for decreases
 #define CHANCE_POP_EXHAUST_INTENSITY_INCREASE 25 //percent chance intensity will increase instead of decrease
 
-#define BRIGHT_EXHAUST_LEVEL (((CRSF_HIGH - CRSF_MID) / 100) * 60) + CRSF_MID
+#define BRIGHT_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 60) + INPUT_MID
 #define MAX_START_BRIGHT_EXHAUST_INTENSITY 1000
 #define MIN_START_BRIGHT_EXHAUST_INTENSITY 800
 #define MAX_CHANGE_BRIGHT_EXHAUST_INTENSITY 20 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_BRIGHT_EXHAUST_INTENSITY 5 //value is halfed on increase, full value used for decreases
 #define CHANCE_BRIGHT_EXHAUST_INTENSITY_INCREASE 50 //percent chance intensity will increase instead of decrease
 
-#define DIM_EXHAUST_LEVEL (((CRSF_HIGH - CRSF_MID) / 100) * 40) + CRSF_MID
+#define DIM_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 40) + INPUT_MID
 #define MAX_START_DIM_EXHAUST_INTENSITY 1000
 #define MIN_START_DIM_EXHAUST_INTENSITY 750
 #define MAX_CHANGE_DIM_EXHAUST_INTENSITY 100 //value is halfed on increase, full value used for decreases
@@ -94,132 +79,167 @@
 #define CHANCE_DIM_EXHAUST_INTENSITY_INCREASE 10 //percent chance intensity will increase instead of decrease
 
 
-struct ControlState {
-  bool systemEnabled;//complete on/off
-  int systemLevel; //0 - day lights | 1 - night lights | 2 - everything
-
-  int esc;
-
-  bool lowBeams;
-  bool highBeams;
-  bool auxLights;
-  bool brakes;
-  bool hazards;
-
-  bool driftLights;
-  bool underglow;
-  bool exhaust;
-
-  bool leftTurn;
-  bool rightTurn;
-  bool flashLights;
-};
-
-struct Level {
-  bool headLights;
-  bool auxLights;
-  bool brakes;
-  bool hazards;
-  bool flashLights;
-  bool turnSignals;
-  bool driftLights;
-  bool underglow;
-  bool exhaust;
-};
-
-enum SignalType {
+enum InputType {
   CRSF,
   SBUS
 };
 
-enum LightType {
-  RIGHT_HEAD,
-  LEFT_HEAD,
 
-  RIGHT_FRONT_TURN,
-  LEFT_FRONT_TURN,
+struct InputConfig {
+  InputType type;
 
-  RIGHT_BRAKE,
-  LEFT_BRAKE,
+  int steerChannel;
+  bool steerInverted;
 
-  RIGHT_REAR_TURN,
-  LEFT_REAR_TURN,
+  int escChannel;
+  bool escInverted;
 
-  AUX
+  int enableChannel;
+  bool enabledInverted;
+
+  int levelChannel;
+  bool levelInverted;
 };
 
-enum StripType {
-  DRIFT_LIGHT,
-  UNDERGLOW,
-  EXHAUST
+struct Roles {
+  bool leftTurn;
+  bool rightTurn;
+  bool brake;
+  bool tail;
+  bool head;
+  bool reverse;
+  bool hazard;
+  bool running;
+  bool aux1;
+  bool aux2;
+  bool strobe1;
+  bool strobe2;
 };
 
-enum DriftLightType {
-  MIDDLE_OUT,
-  FRONT_TO_BACK,
-  BACK_TO_FRONT
+enum OutputType {
+  LED_STRIP,
+  SINGLE_LED
 };
 
-enum FlashGroup {
-  OFF,
-  GROUP1,
-  GROUP2
+enum StripAnimation {
+  NONE,
+  UNDERGLOW_SOLID,
+  UNDERGLOW_BREATHE,
+  UNDERGLOW_CYCLE,
+  UNDERGLOW_CHASE,
+  THROTTLE_BRAKE_LIGHT_BOTTOM,
+  THROTTLE_BRAKE_LIGHT_TOP,
+  THROTTLE_BRAKE_LIGHT_MIDDLE,
+  EXHAUST_FLAME,
+  POLICE_LIGHTS_SOLID,
+  POLICE_LIGHTS_WRAP,
+  CAUTION_LIGHTS,
 };
 
-struct OutConfig {
-  LightType lightType;
-  FlashGroup flashGroup;
+struct Animations{
+  bool underglow;
+  bool throttleBrakeLight;
+  bool exhaustFlame;
+  bool policeLights;
+  bool cautionLights;
 };
 
-struct StripConfig {
-  int numLeds;
-  StripType stripType;
-  DriftLightType driftLightType;
+struct LevelConfig {
+  Roles roles;
+  Animations animations;
+};
+
+struct InputValues {
+  int steer;
+  int esc;
+  int level;
+  int enabled;
+
+  unsigned long lastUpdate;
+};
+
+struct InputState {
+  bool enabled;
+  int level;
+  bool leftTurn;
+  bool rightTurn;
+  bool hazards;
+  bool brakes;
+};
+
+enum FlameType {
+  NO_FLAME,
+  DIM_FLAME,
+  BRIGHT_FLAME,
+  POP_FLAME
+};
+
+struct AnimationState {
+  bool leftTurnOn;
+  bool leftTurnBlinkOn;
+  unsigned long leftTurnStartTime;
+
+  bool rightTurnOn;
+  bool rightTurnBlinkOn;
+  unsigned long rightTurnStartTime;
+
+  bool hazardsOn;
+  bool hazardsBlinkOn;
+  unsigned long hazardsStartTime;
+
+  bool strobe1BlinkOn;
+  bool strobe2BlinkOn;
+
+  int flameIntensity;
+  CRGBPalette16 flamePalette;
+  int lastEscValue;
+  int lastMaxEscValue;
+  FlameType currentFlameType;
+  FlameType lastFlameType;
+  unsigned long flameStartTime;
+
+  CRGB underglowCycleColor;
+  int underglowPalletePos;
+
+  int wrapPoliceStrobePos;
+  unsigned long wrapPoliceLightLastChange;
+  bool solidPoliceAlternateColor;
+};
+
+struct OutputChannelConfig {
+  int pin;
+  OutputType type;
+  StripAnimation stripAnimation;
+  Roles roles;
+  int stripLedCount;
   CRGB color;
+  EOrder colorOrder;
 };
+
+struct OutputConfig {
+  OutputChannelConfig channelConfigs[MAX_CHANNELS];
+};
+
 
 struct Config {
-  //input
-  SignalType signalType;
-  int triggerChannel;
-  int levelChannel;
-
-  //options
-  bool invertSteering;
-  bool invertESC;
-  bool enableTurnSignals;
-  bool turnSignalsAlsoHead;
-  bool turnSignalsAlsoBrake;
-  bool enableHazards;
-  bool enableFlash;
-
-  //Levels
-  Level levelCfgs[NUM_LEVELS];
-
-  //Out
-  OutConfig outCfgs[NUM_LIGHT_OUTPUTS];
-
-  //Strip
-  StripConfig stripCfgs[NUM_STRIPS];
-
+  InputConfig inputConfig;
+  OutputConfig outputConfig;
+  LevelConfig levelConfigs[NUM_LEVELS];
 };
+
+struct State{
+  Config config;
+
+  InputValues inputValues;
+  InputState inputState;
+  AnimationState animationState;
+};
+
 
 Config GetDefaultConfig();
 
-void PrintConfig(Config config);
+Config CreateOrLoadCfg();
 
-SignalType GetSignalTypeFromString(const std::string& value);
-
-LightType GetLightTypeFromString(const std::string& value);
-
-StripType GetStripTypeFromString(const std::string& value);
-
-FlashGroup GetFlashGroupFromString(const std::string& value);
-
-DriftLightType GetDriftLightTypeFromString(const std::string& value);
-
-CRGB GetColorFromHexString(const String& hexString);
-
-bool GetBoolFromString(const std::string& value);
+void SaveConfig(Config cfg);
 
 #endif

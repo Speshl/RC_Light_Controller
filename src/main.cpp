@@ -1,30 +1,19 @@
 #include <Arduino.h>
-#include <Preferences.h>
-#include "web_cfg.h"
 #include <CrsfSerial.h>
-#include "light_handler.h"
-#include "strip_handler.h"
-#include "storage.h"
+#include "config.h"
+#include "input.h"
+#include "web.h"
+#include "output.h"
+#include "animation.h"
 
-// Pass any HardwareSerial port
-// "Arduino" users (atmega328) can not use CRSF_BAUDRATE, as the atmega does not support it
-// and should pass 250000, but then also must flash the receiver with RCVR_UART_BAUD=250000
-// Also note the atmega only has one Serial, so logging to Serial must be removed
-CrsfSerial crsf(Serial2, CRSF_BAUDRATE); //Arduino IOT use Serial1, ESP32 use Serial2, Serial is debug console
-
-ControlState controlState;
-ControlState lastState;
-
-unsigned long lastUpdateTime = millis();
-
-Config config;
-Preferences preferences;
+State state;
 
 void setup();
 void loop();
-void getUpdatedControlState();
-ControlState filterStateByLevel(ControlState state, unsigned long lastUpdateTime);
-void CheckForUpdates();
+void SetupInitialStartState(State* state);
+void ApplyInputToState(State* state, InputValues input);
+void PrintState(State* state);
+
 
 int main() {
     init();
@@ -44,197 +33,106 @@ void setup() {
   // }
   Serial.println("starting up...");
 
-  preferences.begin("rclc", false);
-
-  config = CreateOrLoadCfg(&preferences);
-
-  crsf.begin();
-  crsf.onPacketChannels = &getUpdatedControlState;
-  SetupLights(config);
-  SetupStrips(config);
-  SetupWifi(&preferences,config);
-
-  controlState.esc = CRSF_MID;
+  //setup initial start state
+  SetupInitialStartState(&state);
+  //setup RC input (CRSF/SBUS)
+  SetupInput(&state.config);
+  //setup wifi/web server
+  // SetupWifi(state.config);
+  //setup led outputs
+  SetupOutput(state.config);
 
   Serial.println("start up complete");
 }
 
 void loop() {
-  //Serial.println("loop start");
-  crsf.loop();
+  //check for new RC input
+  InputValues newInput = GetLatestInput();
 
-  CheckForUpdates();
-  ControlState filteredState = filterStateByLevel(controlState, lastUpdateTime);
+  //sync new input to state
+  ApplyInputToState(&state, newInput);
 
-  UpdateLights(filteredState);
-  UpdateStrips(filteredState);
+  //calculate shared animation states
+  CalculateAnimations(&state);
 
-  unsigned long startMillis = millis();  // Get the current time
-  while (millis() - startMillis < 5) {  // Loop for 10 milliseconds
-    ProcessWifi();
-  }
+  //apply state to outputs
+  ShowState(&state);
+
+  //check for new wifi input
+  // ProcessWifi();// this will cause device to reset if config is updated
+  
+  //delay(5000);//Temp for watching logs
 }
 
-void getUpdatedControlState(){
-  //Serial.println("Got Commands");
-  int steer = crsf.getChannel(STEER_CHANNEL);
-  int esc = crsf.getChannel(ESC_CHANNEL);
-  int level = crsf.getChannel(LIGHT_LEVEL_CHANNEL);
-  int enabled = crsf.getChannel(SYSTEM_ENABLE_CHANNEL);
-
-  // Serial.print("Steer: ");
-  // Serial.print(steer);
-  // Serial.print(" Esc: ");
-  // Serial.print(esc);
-  // Serial.print(" Enabled: ");
-  // Serial.print(enabled);
-  // Serial.print(" Level: ");
-  // Serial.println(level);
-
-  if(config.invertSteering){
-    if(steer > CRSF_MID+TURN_FLEX_RANGE){
-    controlState.leftTurn = true;
-    }else{
-      controlState.leftTurn = false;
-    }
-
-    if(steer < CRSF_MID-TURN_FLEX_RANGE){
-      controlState.rightTurn = true;
-    }else{
-      controlState.rightTurn = false;
-    }
-  }else{
-    if(steer > CRSF_MID+TURN_FLEX_RANGE){
-      controlState.rightTurn = true;
-    }else{
-      controlState.rightTurn = false;
-    }
-
-    if(steer < CRSF_MID-TURN_FLEX_RANGE){
-      controlState.leftTurn = true;
-    }else{
-      controlState.leftTurn = false;
-    }
-  }  
-
-  if(esc < CRSF_MID-FLEX_RANGE){
-    controlState.brakes = true;
-  }else{
-    controlState.brakes = false;
-  }
-
-  if(level < CRSF_MID-FLEX_RANGE){
-    controlState.systemLevel = 0; //day time lighting
-  }else if(level > CRSF_MID+FLEX_RANGE){
-    controlState.systemLevel = 2; //drift lighting
-  }else{
-    controlState.systemLevel = 1; //night time lighting
-  }
-
-  if(enabled > CRSF_MID+FLEX_RANGE){
-    controlState.systemEnabled = true;
-  }else{
-    controlState.systemEnabled = false;
-  }
-
-  if(esc > CRSF_MID+ESC_DEADZONE || esc < CRSF_MID-ESC_DEADZONE){
-    controlState.esc = esc; 
-  }else{
-    controlState.esc = CRSF_MID; 
-  }
+void SetupInitialStartState(State* state){
+  state->config = CreateOrLoadCfg();
+  return;
 }
 
-ControlState filterStateByLevel(ControlState state, unsigned long lastUpdateTime){
-  ControlState returnValue;
-  Level level = config.levelCfgs[state.systemLevel];
-
-  returnValue.systemEnabled = state.systemEnabled;
-  returnValue.esc = state.esc;  
-
-  if(level.headLights){
-    returnValue.highBeams = true;
-    returnValue.lowBeams = false;
-  }else{
-    returnValue.highBeams = false;
-    returnValue.lowBeams = false;
+void ApplyInputToState(State* state, InputValues input){
+  unsigned long currentTime = millis();
+  bool updateFound = false;
+  //check if different from current state
+  if(input.steer != state->inputValues.steer){
+    updateFound = true;
+  }else if(input.esc != state->inputValues.esc){
+    updateFound = true;
+  }else if(input.level != state->inputValues.level){
+    updateFound = true;
+  }else if(input.enabled != state->inputValues.enabled){
+    updateFound = true;
   }
 
-  if(level.auxLights){
-    returnValue.auxLights = true;
-  }else{
-    returnValue.auxLights = false;
-  }
-
-  if(level.brakes){
-    returnValue.brakes = state.brakes;
-  }
-
-  if(level.flashLights){
-    returnValue.flashLights = true;
-  }else{
-    returnValue.flashLights = false;
-  }
-
-  if(level.turnSignals && config.enableTurnSignals){
-    returnValue.leftTurn = state.leftTurn;
-    returnValue.rightTurn = state.rightTurn;
-  }else{
-    returnValue.leftTurn = false;
-    returnValue.rightTurn = false;
-  }
-
-  if(level.driftLights && ENABLE_DRIFT_LIGHT){
-    returnValue.driftLights = true;
-  }else{
-    returnValue.driftLights = false;
-  }
-
-  if(level.underglow && ENABLE_UNDERGLOW){
-    returnValue.underglow = true;
-  }else{
-    returnValue.underglow = false;
-  }
-
-  if(level.exhaust && ENABLE_EXHAUST){
-    returnValue.exhaust = true;
-  }else{
-    returnValue.exhaust = false;
-  }
-
-  if(level.hazards && config.enableHazards){
-    if(lastUpdateTime + IDLE_TIME < millis()) {
-      returnValue.hazards = true;
-    }else{
-      returnValue.hazards = false;
+  if(!updateFound){
+    if(currentTime - state->inputValues.lastUpdate > TIME_TIL_FLASH){
+      state->inputState.hazards = true;
     }
+    return;
   }
 
-  return returnValue;
+  //PrintInput(input);
+
+  state->inputValues.steer = input.steer;
+  state->inputValues.esc = input.esc;
+  state->inputValues.level = input.level;
+  state->inputValues.enabled = input.enabled;
+
+  state->inputState.hazards = false;
+  state->inputValues.lastUpdate = input.lastUpdate;
+
+
+  state->inputState.enabled = input.enabled > INPUT_MID+LEVEL_THRESHOLD;
+
+  if(input.level < INPUT_MID-LEVEL_THRESHOLD){
+    state->inputState.level = 0;
+  }else if(input.level > INPUT_MID+LEVEL_THRESHOLD){
+    state->inputState.level = 2;
+  }else{
+    state->inputState.level = 1;
+  }
+
+  state->inputState.leftTurn = input.steer < INPUT_MID - TURN_THRESHOLD;
+  state->inputState.rightTurn = input.steer > INPUT_MID + TURN_THRESHOLD;
+  state->inputState.brakes = input.esc < INPUT_MID - INPUT_THRESHOLD;
+
+  //PrintState(state);
+
+  return;
 }
 
-void CheckForUpdates(){
-  bool hadUpdate = false;
-  if(controlState.esc != lastState.esc){
-    hadUpdate = true;
-  }else if(controlState.brakes != lastState.brakes){
-    hadUpdate = true;
-  }
-  else if(controlState.systemLevel != lastState.systemLevel){
-    hadUpdate = true;
-  }
-  else if(controlState.systemEnabled != lastState.systemEnabled){
-    hadUpdate = true;
-  }
-  else if(controlState.rightTurn != lastState.rightTurn){
-    hadUpdate = true;
-  }
-  else if(controlState.leftTurn != lastState.leftTurn){
-    hadUpdate = true;
-  }
-
-  lastState = controlState;
-
-  if(hadUpdate){
-    lastUpdateTime = millis();
-  }
+void PrintState(State* state){
+  Serial.println("State: ");
+  Serial.print("Enabled: ");
+  Serial.println(state->inputState.enabled);
+  Serial.print("Level: ");
+  Serial.println(state->inputState.level);
+  Serial.print("Left Turn: ");
+  Serial.println(state->inputState.leftTurn);
+  Serial.print("Right Turn: ");
+  Serial.println(state->inputState.rightTurn);
+  Serial.print("Hazards: ");
+  Serial.println(state->inputState.hazards);
+  Serial.print("Brakes: ");
+  Serial.println(state->inputState.brakes);
+  return;
 }
