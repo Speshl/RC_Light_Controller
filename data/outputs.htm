@@ -1,0 +1,18 @@
+<div id="outputTab">
+    <div class="outtablist">
+        <button type="button" id="output1TabButton" class="outtablinks active" hx-get="output1.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML"">CH1</button>
+        <button type="button" id="output2TabButton" class="outtablinks" hx-get="output2.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH2</button>
+        <button type="button" id="output3TabButton" class="outtablinks" hx-get="output3.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH3</button>
+        <button type="button" id="output4TabButton" class="outtablinks" hx-get="output4.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH4</button>
+        <button type="button" id="output5TabButton" class="outtablinks" hx-get="output5.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH5</button>
+        <button type="button" id="output6TabButton" class="outtablinks" hx-get="output6.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH6</button>
+        <button type="button" id="output7TabButton" class="outtablinks" hx-get="output7.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH7</button>
+        <button type="button" id="output8TabButton" class="outtablinks" hx-get="output8.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH8</button>
+        <button type="button" id="output9TabButton" class="outtablinks" hx-get="output9.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH9</button>
+        <button type="button" id="output10TabButton" class="outtablinks" hx-get="output10.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH10</button>
+        <button type="button" id="output11TabButton" class="outtablinks" hx-get="output11.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH11</button>
+        <button type="button" id="output12TabButton" class="outtablinks" hx-get="output12.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH12</button>
+    </div>
+
+    <div id="outputContent" hx-on="htmx:afterSettle: showHideFieldSets()"></div>
+</div>

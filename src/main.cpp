@@ -1,12 +1,14 @@
 #include <Arduino.h>
 #include <CrsfSerial.h>
-#include "config.h"
-#include "input.h"
-#include "web.h"
-#include "output.h"
-#include "animation.h"
+#include "config/config.h"
+#include "input/input.h"
+#include "web/web.h"
+#include "output/output.h"
+#include "animation/animation.h"
 
 State state;
+
+bool lightsPaused = false;
 
 void setup();
 void loop();
@@ -38,7 +40,7 @@ void setup() {
   //setup RC input (CRSF/SBUS)
   SetupInput(&state.config);
   //setup wifi/web server
-  // SetupWifi(state.config);
+  SetupWifi(state.config);
   //setup led outputs
   SetupOutput(state.config);
 
@@ -46,22 +48,31 @@ void setup() {
 }
 
 void loop() {
-  //check for new RC input
-  InputValues newInput = GetLatestInput();
+  if(!IsActiveWebClient()){
+    if(lightsPaused){
+      lightsPaused = false;
+      Serial.println("lights unpaused");
+    }
 
-  //sync new input to state
-  ApplyInputToState(&state, newInput);
+    //check for new RC input
+    InputValues newInput = GetLatestInput();
 
-  //calculate shared animation states
-  CalculateAnimations(&state);
+    //sync new input to state
+    ApplyInputToState(&state, newInput);
 
-  //apply state to outputs
-  ShowState(&state);
+    //calculate shared animation states
+    CalculateAnimations(&state);
 
+    //apply state to outputs
+    ShowState(&state);
+  }else{
+    if(!lightsPaused){
+      lightsPaused = true;
+      Serial.println("lights paused");
+    }
+  }
   //check for new wifi input
-  // ProcessWifi();// this will cause device to reset if config is updated
-  
-  //delay(5000);//Temp for watching logs
+  ProcessWifi();// this will cause device to reset if config is updated
 }
 
 void SetupInitialStartState(State* state){

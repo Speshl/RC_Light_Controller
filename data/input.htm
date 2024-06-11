@@ -1,0 +1,80 @@
+<div>
+    <form id="configForm" action="/input" method="post" onsubmit="return confirmSubmit()">
+        <div id="input" class="maintabcontent show">
+            <div>
+                <div class="row gridcontainer">
+                    <label for="signal_type" style="cursor:pointer;" title="Input signal type expected" class="fieldlabel">Signal Type:</label>
+                    <select name="signal_type" id="signal_type" class="gridselect">
+                        <option value="CRSF" %INPUT_CRSF%>CRSF</option>
+                        <option value="SBUS" %INPUT_SBUS%>SBUS</option>
+                    </select>
+                </div>
+
+                <div class="row gridcontainer">
+                    <label for="steer_channel" style="cursor:pointer;" title="Receiver channel that controls steering, usually channel 1" class="fieldlabel">Steer Channel:</label>
+                    <select name="steer_channel" id="steer_channel" class="gridselect">
+                        <option value="1" %INPUT_STEER_CHANNEL_1%>1</option>
+                        <option value="2" %INPUT_STEER_CHANNEL_2%>2</option>
+                        <option value="3" %INPUT_STEER_CHANNEL_3%>3</option>
+                        <option value="4" %INPUT_STEER_CHANNEL_4%>4</option>
+                        <option value="5" %INPUT_STEER_CHANNEL_5%>5</option>
+                        <option value="6" %INPUT_STEER_CHANNEL_6%>6</option>
+                        <option value="7" %INPUT_STEER_CHANNEL_7%>7</option>
+                        <option value="8" %INPUT_STEER_CHANNEL_8%>8</option>
+                    </select>
+                    <label for="invert_steer" style="cursor:pointer;" title="Invert Steering">
+                        <input type="checkbox" name="invert_steer" id="invert_steer" %INPUT_INVERT_STEER%>
+                        Invert Steering
+                    </label>
+                </div>
+
+                <div class="row gridcontainer">
+                    <label for="esc_channel" style="cursor:pointer;" title="Receiver channel that controls esc, usually channel 2" class="fieldlabel">ESC Channel:</label>
+                    <select name="esc_channel" id="esc_channel" class="gridselect">
+                        <option value="1" %INPUT_ESC_CHANNEL_1%>1</option>
+                        <option value="2" %INPUT_ESC_CHANNEL_2%>2</option>
+                        <option value="3" %INPUT_ESC_CHANNEL_3%>3</option>
+                        <option value="4" %INPUT_ESC_CHANNEL_4%>4</option>
+                        <option value="5" %INPUT_ESC_CHANNEL_5%>5</option>
+                        <option value="6" %INPUT_ESC_CHANNEL_6%>6</option>
+                        <option value="7" %INPUT_ESC_CHANNEL_7%>7</option>
+                        <option value="8" %INPUT_ESC_CHANNEL_8%>8</option>
+                    </select>
+                    <label for="invert_esc" style="cursor:pointer;" title="Invert ESC">
+                        <input type="checkbox" name="invert_esc" id="invert_esc" %INPUT_INVERT_ESC%>
+                        Invert ESC
+                    </label>
+                </div>
+    
+                <div class="row gridcontainer">
+                    <label for="trigger_channel" style="cursor:pointer;" title="Light controller will be enabled when this channel is set high. Must be a different channel than level channel." class="fieldlabel">Trigger Channel:</label>
+                    <select name="trigger_channel" id="trigger_channel" class="gridselect">
+                        <option value="10" %INPUT_TRIGGER_CHANNEL_10%>10</option>
+                        <option value="11" %INPUT_TRIGGER_CHANNEL_11%>11</option>
+                        <option value="12" %INPUT_TRIGGER_CHANNEL_12%>12</option>
+                        <option value="13" %INPUT_TRIGGER_CHANNEL_13%>13</option>
+                        <option value="14" %INPUT_TRIGGER_CHANNEL_14%>14</option>
+                        <option value="15" %INPUT_TRIGGER_CHANNEL_15%>15</option>
+                        <option value="16" %INPUT_TRIGGER_CHANNEL_16%>16</option>
+                    </select>
+                </div>
+    
+                <div class="row gridcontainer">
+                    <label for="level_channel" style="cursor:pointer;" title="Used to select 1 of 3 light levels based on this channel being set low/medium/high. Must be a different channel than trigger channel." class="fieldlabel">Level Select Channel:</label>
+                    <select name="level_channel" id="level_channel" class="gridselect">
+                        <option value="10" %INPUT_LEVEL_CHANNEL_10%>10</option>
+                        <option value="11" %INPUT_LEVEL_CHANNEL_11%>11</option>
+                        <option value="12" %INPUT_LEVEL_CHANNEL_12%>12</option>
+                        <option value="13" %INPUT_LEVEL_CHANNEL_13%>13</option>
+                        <option value="14" %INPUT_LEVEL_CHANNEL_14%>14</option>
+                        <option value="15" %INPUT_LEVEL_CHANNEL_15%>15</option>
+                        <option value="16" %INPUT_LEVEL_CHANNEL_16%>16</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="applybutton">
+            <input type="button" value="Apply" onclick="submitFormAsJson()">
+        </div>
+    </form>
+</div>

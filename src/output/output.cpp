@@ -411,7 +411,11 @@ void showPoliceLightsWrap(State* state, int channel){ //Split
     }
 }
 
-void showCautionLights(State* state, int channel){
+void showCautionLightsSolid(State* state, int channel){
+    
+}
+
+void showCautionLightsWrap(State* state, int channel){
     
 }
 
@@ -426,7 +430,6 @@ void SetupOutput(Config cfg){
 
             if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_1){
                 FastLED.addLeds<CHIPSET, OUTPUT_PIN_1, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
-                Serial.println("Added LED strip to pin 1");
             }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_2){
                 FastLED.addLeds<CHIPSET, OUTPUT_PIN_2, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
             }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_3){
@@ -496,9 +499,9 @@ void ShowState(State* state){
                     case UNDERGLOW_CYCLE:
                         showUnderglowCycle(state, i);
                         break;
-                    case UNDERGLOW_CHASE:
+                    //case UNDERGLOW_CHASE:
                         //showUnderglowChase(state, i);
-                        break;
+                        //break;
                     case THROTTLE_BRAKE_LIGHT_BOTTOM:
                         showThrottleBrakeLightBottom(state, i);
                         break;
@@ -517,8 +520,11 @@ void ShowState(State* state){
                     case POLICE_LIGHTS_WRAP:
                         showPoliceLightsWrap(state, i);
                         break;
-                    case CAUTION_LIGHTS:
-                        showCautionLights(state, i);
+                    case CAUTION_LIGHTS_SOLID:
+                        showCautionLightsSolid(state, i);
+                        break;
+                    case CAUTION_LIGHTS_WRAP:
+                        showCautionLightsWrap(state, i);
                         break;
                     default:
                         //Serial.println("Invalid strip animation");

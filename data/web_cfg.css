@@ -1,0 +1,159 @@
+.container {
+    max-width: 500px;
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.maintablist {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    display:flex;
+}
+
+.maintablist button {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 5px;
+    flex: 1;
+    text-align: center;
+    transition: 0.3s;
+    border-right: 1px solid #ccc;
+}
+
+.maintablist button:hover {
+    background-color: #ddd;
+}
+
+.maintablist button.active {
+    background-color: #ccc;
+}
+
+.maintabcontent {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.leveltabcontent {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.leveltablist {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    display:flex;
+}
+
+.leveltablist button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 5px;
+    transition: 0.3s;
+    flex: 1;
+    border-right: 1px solid #ccc;
+}
+
+.leveltablist button:hover {
+    background-color: #ddd;
+}
+
+.leveltablist button.active {
+    background-color: #ccc;
+}
+
+.outtablist {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    display:flex
+}
+
+.outtablist button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 5px 5px;
+    transition: 0.3s;
+    flex: 1;
+    border-right: 1px solid #ccc;
+}
+
+.outtablist button:hover {
+    background-color: #ddd;
+}
+
+.outtablist button.active {
+    background-color: #ccc;
+}
+
+.outtabcontent {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.displayblock > * {
+    display: block;
+}
+
+.margin > * {
+    margin: 5px;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.gridcontainer {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    grid-gap: 10px;
+    margin: 5px auto;
+}
+
+.outputcontainer {
+    display: grid;
+    grid-template-columns: 2fr 2fr 1fr;
+    grid-gap: 10px;
+    margin: 5px auto;
+}
+
+.fieldlabel {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.gridselect {
+    max-width: 100px;
+}
+
+.buttoncontainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.applybutton {
+    text-align: center;
+    margin: 5px;
+}

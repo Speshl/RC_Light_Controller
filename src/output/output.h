@@ -1,6 +1,6 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
-#include "config.h"
+#include "../config/config.h"
 
 
 void SetupOutput(Config cfg);

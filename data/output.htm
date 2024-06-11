@@ -1,0 +1,122 @@
+<div>
+    <form id="configForm" action="/output" method="post" onsubmit="return confirmSubmit()">
+        <input type="hidden" name="out_num" value="%OUT_IDX%">
+        <label for="out_name" style="cursor:pointer;" title="Name of the output">%OUT_NAME%</label>
+        <div id="%OUT_NUM%" class="outtabcontent displayblock">
+            <label for="out_type" style="cursor:pointer;" title="Output Type">
+                Type:
+                <select name="out_type" id="out_type">
+                    <option value=single %OUT_TYPE_SINGLE%>Single LED</option>
+                    <option value=strip %OUT_TYPE_STRIP%>LED Strip</option>
+                </select>
+            </label>
+            <div id="out_single_fields" class="displayblock margin">
+                <label for="out_roles">
+                    Roles:
+                    <div class="displayblock">
+                        <label for="out_role_leftTurn" style="cursor:pointer;" title=" will be active on level 1">
+                            <input type="checkbox" name="out_role_leftTurn" id="out_role_leftTurn" %OUT_ROLE_LEFTTURN%>
+                            Left Turn
+                        </label>
+                        <label for="out_role_rightTurn" style="cursor:pointer;" title="rightTurn will be active on level 1">
+                            <input type="checkbox" name="out_role_rightTurn" id="out_role_rightTurn" %OUT_ROLE_RIGHTTURN%>
+                            Right Turn
+                        </label>
+                        <label for="out_role_brake" style="cursor:pointer;" title="brake will be active on level 1">
+                            <input type="checkbox" name="out_role_brake" id="out_role_brake" %OUT_ROLE_BRAKE%>
+                            Brake Lights
+                        </label>
+                        <label for="out_role_tail" style="cursor:pointer;" title="tail will be active on level 1">
+                            <input type="checkbox" name="out_role_tail" id="out_role_tail" %OUT_ROLE_TAIL%>
+                            Tail Lights
+                        </label>
+                        <label for="out_role_head" style="cursor:pointer;" title="head will be active on level 1">
+                            <input type="checkbox" name="out_role_head" id="out_role_head" %OUT_ROLE_HEAD%>
+                            Head Lights
+                        </label>
+                        <label for="out_role_reverse" style="cursor:pointer;" title="reverse will be active on level 1">
+                            <input type="checkbox" name="out_role_reverse" id="out_role_reverse" %OUT_ROLE_REVERSE%>
+                            Reverse Lights
+                        </label>
+                        <label for="out_role_hazard" style="cursor:pointer;" title="hazard will be active on level 1">
+                            <input type="checkbox" name="out_role_hazard" id="out_role_hazard" %OUT_ROLE_HAZARD%>
+                            Hazard Lights
+                        </label>
+                        <label for="out_role_running" style="cursor:pointer;" title="running will be active on level 1">
+                            <input type="checkbox" name="out_role_running" id="out_role_running" %OUT_ROLE_RUNNING%>
+                            Running Lights
+                        </label>
+                        <label for="out_role_aux1" style="cursor:pointer;" title="aux1 will be active on level 1">
+                            <input type="checkbox" name="out_role_aux1" id="out_role_aux1" %OUT_ROLE_AUX1%>
+                            Aux1 Lights
+                        </label>
+                        <label for="out_role_aux2" style="cursor:pointer;" title="aux2 will be active on level 1">
+                            <input type="checkbox" name="out_role_aux2" id="out_role_aux2" %OUT_ROLE_AUX2%>
+                            Aux2 Lights
+                        </label>
+                        <label for="out_role_strobe1" style="cursor:pointer;" title="strobe1 will be active on level 1">
+                            <input type="checkbox" name="out_role_strobe1" id="out_role_strobe1" %OUT_ROLE_STROBE1%>
+                            Strobe1 Lights
+                        </label>
+                        <label for="out_role_strobe2" style="cursor:pointer;" title="strobe2 will be active on level 1">
+                            <input type="checkbox" name="out_role_strobe2" id="out_role_strobe2" %OUT_ROLE_STROBE2%>
+                            Strobe2 Lights
+                        </label>
+                    </div>
+                </label>
+            </div>
+            <div id="out_strip_fields" class="displayblock margin">
+
+                <div class="outputcontainer">
+                    <label for="out_order" style="cursor:pointer;" title="RGB order of the strip" class="fieldlabel">
+                        Color Order:
+                    </label>
+                    <select name="out_order" id="out_order">
+                        <option value=10 %OUT_RGB%>RGB</option>
+                        <option value=17 %OUT_RBG%>RBG</option>
+                        <option value=66 %OUT_GRB%>GRB</option>
+                        <option value=80 %OUT_GBR%>GBR</option>
+                        <option value=129 %OUT_BRG%>BRG</option>
+                        <option value=136 %OUT_BGR%>BGR</option>
+                    </select>
+                </div>
+
+                <div class="outputcontainer">
+                    <label for="out_num_leds" style="cursor:pointer;" title="Number of leds in the strip" class="fieldlabel">
+                        Number LEDs:
+                    </label>
+                    <input type="number" id="out_num_leds" name="out_num_leds" min="1" max="100" value="%OUT_NUM_LEDS%"/>
+                </div>
+
+                <div class="outputcontainer"> 
+                    <label for="out_animation" style="cursor:pointer;" title="Animation strip should display" class="fieldlabel">
+                        Animation:
+                    </label>
+                    <select name="out_animation" id="out_animation">
+                        <option value=1 %OUT_UNDERGLOW_SOLID%>Underglow (Solid)</option>
+                        <option value=2 %OUT_UNDERGLOW_BREATHE%>Underglow (Breathe)</option>
+                        <option value=3 %OUT_UNDERGLOW_CYCLE%>Underglow (Cycle)</option>
+                        <option value=4 %OUT_THROTTLE_LIGHT_BOTTOM%>Throttle Light (Bottom)</option>
+                        <option value=5 %OUT_THROTTLE_LIGHT_TOP%>Throttle Light (Top)</option>
+                        <option value=6 %OUT_THROTTLE_LIGHT_MID%>Throttle Light (MID)</option>
+                        <option value=7 %OUT_EXHAUST_FLAME%>Exhaust Flame</option>
+                        <option value=8 %OUT_POLICE_LIGHTS_SOLID%>Police Light (Solid)</option>
+                        <option value=9 %OUT_POLICE_LIGHTS_WRAP%>Police Light (Wrap)</option>
+                        <option value=10 %OUT_CAUTION_LIGHTS_SOLID%>Caution Light (Solid)</option>
+                        <option value=11 %OUT_CAUTION_LIGHTS_WRAP%>Caution Light (Wrap)</option>
+                    </select>
+                </div>
+
+                <div class="outputcontainer">
+                    <label for="out_color" style="cursor:pointer;" title="Color of underglow" class="fieldlabel">
+                        Underglow Color:
+                    </label>
+                    <input type="color" id="out_color" name="out_color" value="%OUT_COLOR%">
+                </div>
+            </div>
+        </div>
+        <div class="applybutton">
+            <input type="button" value="Apply" onclick="submitFormAsJson()">
+        </div>
+    </form>
+</div>
