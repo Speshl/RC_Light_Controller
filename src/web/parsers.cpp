@@ -173,5 +173,7 @@ Config parseOutConfig(JsonDocument doc){
       cfg.outputConfig.channelConfigs[i].stripLedCount = numLeds;
     }
 
+    cfg.outputConfig.channelConfigs[i].colorOrder = doc["out_order"];
+
     return cfg;
 }

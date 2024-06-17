@@ -57,26 +57,26 @@ const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};//TODO Co
 
 #define MAX_EXHAUST_INTENSITY 1000
 
-#define POP_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 90) + INPUT_MID
+#define POP_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 95) + INPUT_MID
 #define MAX_START_POP_EXHAUST_INTENSITY 1000
 #define MIN_START_POP_EXHAUST_INTENSITY 950
 #define MAX_CHANGE_POP_EXHAUST_INTENSITY 100 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_POP_EXHAUST_INTENSITY 50 //value is halfed on increase, full value used for decreases
-#define CHANCE_POP_EXHAUST_INTENSITY_INCREASE 25 //percent chance intensity will increase instead of decrease
+#define CHANCE_POP_EXHAUST_INTENSITY_INCREASE 30 //percent chance intensity will increase instead of decrease
 
-#define BRIGHT_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 60) + INPUT_MID
-#define MAX_START_BRIGHT_EXHAUST_INTENSITY 1000
+#define BRIGHT_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 80) + INPUT_MID
+#define MAX_START_BRIGHT_EXHAUST_INTENSITY 900
 #define MIN_START_BRIGHT_EXHAUST_INTENSITY 800
-#define MAX_CHANGE_BRIGHT_EXHAUST_INTENSITY 20 //value is halfed on increase, full value used for decreases
+#define MAX_CHANGE_BRIGHT_EXHAUST_INTENSITY 30 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_BRIGHT_EXHAUST_INTENSITY 5 //value is halfed on increase, full value used for decreases
-#define CHANCE_BRIGHT_EXHAUST_INTENSITY_INCREASE 50 //percent chance intensity will increase instead of decrease
+#define CHANCE_BRIGHT_EXHAUST_INTENSITY_INCREASE 10 //percent chance intensity will increase instead of decrease
 
-#define DIM_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 40) + INPUT_MID
-#define MAX_START_DIM_EXHAUST_INTENSITY 1000
-#define MIN_START_DIM_EXHAUST_INTENSITY 750
-#define MAX_CHANGE_DIM_EXHAUST_INTENSITY 100 //value is halfed on increase, full value used for decreases
+#define DIM_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 60) + INPUT_MID
+#define MAX_START_DIM_EXHAUST_INTENSITY 400
+#define MIN_START_DIM_EXHAUST_INTENSITY 200
+#define MAX_CHANGE_DIM_EXHAUST_INTENSITY 40 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_DIM_EXHAUST_INTENSITY 20 //value is halfed on increase, full value used for decreases
-#define CHANCE_DIM_EXHAUST_INTENSITY_INCREASE 10 //percent chance intensity will increase instead of decrease
+#define CHANCE_DIM_EXHAUST_INTENSITY_INCREASE 0 //percent chance intensity will increase instead of decrease
 
 
 enum InputType {

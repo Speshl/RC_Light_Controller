@@ -145,6 +145,7 @@ void calculateUnderglowCycleAnimation(State* state) {
 }
 
 void startPopFlame(State* state) {
+    state->animationState.lastFlameType = state->animationState.currentFlameType;
     state->animationState.currentFlameType = POP_FLAME;
     state->animationState.flameStartTime = millis();
     state->animationState.flameIntensity = random(MIN_START_POP_EXHAUST_INTENSITY, MAX_START_POP_EXHAUST_INTENSITY);
@@ -153,6 +154,7 @@ void startPopFlame(State* state) {
 }
 
 void startBrightFlame(State* state) {
+    state->animationState.lastFlameType = state->animationState.currentFlameType;
     state->animationState.currentFlameType = BRIGHT_FLAME;
     state->animationState.flameStartTime = millis();
     state->animationState.flameIntensity = random(MIN_START_BRIGHT_EXHAUST_INTENSITY, MAX_START_BRIGHT_EXHAUST_INTENSITY);
@@ -161,6 +163,7 @@ void startBrightFlame(State* state) {
 }
 
 void startDimFlame(State* state) {
+    state->animationState.lastFlameType = state->animationState.currentFlameType;
     state->animationState.currentFlameType = DIM_FLAME;
     state->animationState.flameStartTime = millis();
     state->animationState.flameIntensity = random(MIN_START_DIM_EXHAUST_INTENSITY, MAX_START_DIM_EXHAUST_INTENSITY);
@@ -221,46 +224,68 @@ void updatePopFlame(State* state){
 
 void calculateExhaustFlameAnimation(State* state) {
     if(state->inputValues.esc > state->animationState.lastEscValue){
-        if(state->animationState.currentFlameType != DIM_FLAME){
-            state->animationState.currentFlameType = NO_FLAME;
-            return;
-        }
+        //Serial.print("ESC Value: ");
+        //Serial.print(state->inputValues.esc);
+        //Serial.print(" > Last ESC Value: ");
+        //Serial.println(state->animationState.lastEscValue);
+        state->animationState.lastFlameType = state->animationState.currentFlameType;
+        state->animationState.currentFlameType = NO_FLAME;
+        //Serial.println("No flame on up");
+        state->animationState.lastEscValue = state->inputValues.esc;
+        return;
     }
 
-    if(state->animationState.currentFlameType != NO_FLAME){
+    if(state->animationState.lastFlameType == POP_FLAME && state->animationState.flameIntensity == 0){ //pop flame ending triggers a new flame
+        if(state->inputValues.esc >= POP_EXHAUST_LEVEL){
+            //Serial.println("Start pop flame again");
+            startPopFlame(state);
+        }else{
+            //Serial.println("Start bright flame after pop flame");
+            startBrightFlame(state);
+        }
+        state->animationState.lastEscValue = state->inputValues.esc;
+        return;
+    }
 
-        if(state->animationState.flameIntensity == 0){
+    if(state->animationState.currentFlameType != NO_FLAME){ //a flame is active, update or end it
+        if(state->animationState.flameIntensity == 0){ //end flame
+            state->animationState.lastFlameType = state->animationState.currentFlameType;
             state->animationState.currentFlameType = NO_FLAME;
             state->animationState.flameStartTime = 0;
             state->animationState.flamePalette = CRGBPalette16(CRGB::Black);
             state->animationState.lastMaxEscValue = INPUT_MID;
+            state->animationState.lastEscValue = state->inputValues.esc;
+            //Serial.println("No flame on intensity 0");
             return;
         }
 
-        switch(state->animationState.currentFlameType){
+        switch(state->animationState.currentFlameType){ //update proper flame type
             case DIM_FLAME:
+                //Serial.println("Updating dim flame");
                 updateDimFlame(state);
                 break;
             case BRIGHT_FLAME:
+                //Serial.println("Updating bright flame");
                 updateBrightFlame(state);
                 break;
             case POP_FLAME:
+                //Serial.println("Updating pop flame");
                 updatePopFlame(state);
                 break;
+            default:
+                Serial.println("No flame type found");
+                break;
         }
-    }else{
+    }else{ //check if a new flame should start
         if(state->inputValues.esc >= POP_EXHAUST_LEVEL){
+            //Serial.println("Starting pop flame");
             startPopFlame(state);
-        }else if(state->animationState.lastFlameType == POP_FLAME){
+        }else if(state->animationState.lastEscValue >= BRIGHT_EXHAUST_LEVEL && state->inputValues.esc < state->animationState.lastEscValue){
+            //Serial.println("Starting bright flame");
             startBrightFlame(state);
-        }else if(state->inputValues.esc > state->animationState.lastEscValue){
-           //no flames on up
-        }else if(state->inputValues.esc < state->animationState.lastEscValue){
-            if(state->animationState.lastMaxEscValue >= BRIGHT_EXHAUST_LEVEL){
-                startBrightFlame(state);
-            }else if(state->animationState.lastMaxEscValue >= DIM_EXHAUST_LEVEL){
-                startDimFlame(state);
-            }
+        }else if(state->animationState.lastEscValue >= DIM_EXHAUST_LEVEL && state->inputValues.esc < state->animationState.lastEscValue){
+            //Serial.println("Starting dim flame");
+            startDimFlame(state);
         }
     }
 

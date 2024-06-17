@@ -303,13 +303,20 @@ void showExhaustFlame(State* state, int channel){
     LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
 
     if(!state->inputState.enabled || !levelCfg.animations.exhaustFlame){
+        Serial.println("Flame Disabled");
         clearStrip(channel);
         return;
     }
 
     if(state->animationState.flameIntensity == 0 || state->animationState.currentFlameType == NO_FLAME){
+        //Serial.println("No Flame");
         return clearStrip(channel);
     }
+
+    // Serial.print("Flame Intensity: ");
+    // Serial.println(state->animationState.flameIntensity);
+    // Serial.print("Flame Type: ");
+    // Serial.println(state->animationState.currentFlameType);
 
     uint8_t mappedIntensity = map(state->animationState.flameIntensity,0,MAX_EXHAUST_INTENSITY,0,255);
     //CRGB flameColor = HeatColor(mappedIntensity);
