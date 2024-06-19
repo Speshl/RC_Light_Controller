@@ -14,6 +14,22 @@ function loadDefaults() {
     }
 }
 
+
+function powerCycle() {
+    if(confirm('Device will restart and animations will start running again. May need to reconnect to device wifi continue configuring.')) {
+        fetch('/powerCycle', { method: 'GET' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                location.reload();
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+            });
+    }
+}
+
 function submitFormAsJson() {
     var r = confirm("Are you sure you want to apply changes (only visible tab)? Controller will restart.");
     if (r == true) {

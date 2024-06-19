@@ -221,8 +221,12 @@ struct OutputConfig {
   OutputChannelConfig channelConfigs[MAX_CHANNELS];
 };
 
+struct SysConfig {
+  bool forcedShutdown;
+};
 
 struct Config {
+  SysConfig sysConfig;
   InputConfig inputConfig;
   OutputConfig outputConfig;
   LevelConfig levelConfigs[NUM_LEVELS];
@@ -242,5 +246,7 @@ Config GetDefaultConfig();
 Config CreateOrLoadCfg();
 
 void SaveConfig(Config cfg);
+
+void SaveConfigWithRestart(Config cfg);
 
 #endif

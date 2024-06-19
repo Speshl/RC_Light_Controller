@@ -14,6 +14,7 @@ void setup();
 void loop();
 void SetupInitialStartState(State* state);
 void ApplyInputToState(State* state, InputValues input);
+bool UpdatePauseState(bool currentPauseState);
 void PrintState(State* state);
 
 
@@ -48,12 +49,9 @@ void setup() {
 }
 
 void loop() {
-  if(!IsActiveWebClient()){
-    if(lightsPaused){
-      lightsPaused = false;
-      Serial.println("lights unpaused");
-    }
+  lightsPaused = UpdatePauseState(lightsPaused);
 
+  if(!lightsPaused){
     //check for new RC input
     InputValues newInput = GetLatestInput();
 
@@ -65,18 +63,35 @@ void loop() {
 
     //apply state to outputs
     ShowState(&state);
-  }else{
-    if(!lightsPaused){
-      lightsPaused = true;
-      Serial.println("lights paused");
-    }
   }
+
   //check for new wifi input
   ProcessWifi();// this will cause device to reset if config is updated
 }
 
+bool UpdatePauseState(bool currentPauseState){
+  if(currentPauseState){
+    return currentPauseState;
+  }
+
+
+  if(IsActiveWebClient()){
+    Serial.println("Web Client Active, Pausing Lights");
+    return true;
+  }
+  return currentPauseState;
+}
+
 void SetupInitialStartState(State* state){
   state->config = CreateOrLoadCfg();
+
+  if(state->config.sysConfig.forcedShutdown){
+    Serial.println("Forced Shutdown Detected, Pausing Lights");
+    lightsPaused = true;
+    state->config.sysConfig.forcedShutdown = false;
+    SaveConfig(state->config);
+  }
+
   return;
 }
 

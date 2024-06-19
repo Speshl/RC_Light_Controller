@@ -3,6 +3,8 @@
 Config GetDefaultConfig(){
   Config cfg;
   Serial.println("loading default config");
+
+  cfg.sysConfig.forcedShutdown = false;
   
   cfg.inputConfig.type = InputType::CRSF;
   cfg.inputConfig.steerChannel = STEER_CHANNEL;
@@ -197,10 +199,9 @@ Config GetDefaultConfig(){
 
   cfg.outputConfig.channelConfigs[9].pin = pinNums[9];
   cfg.outputConfig.channelConfigs[9].type = LED_STRIP;
-  //cfg.outputConfig.channelConfigs[9].stripAnimation = EXHAUST_FLAME;
-  cfg.outputConfig.channelConfigs[9].stripAnimation = POLICE_LIGHTS_WRAP;
+  cfg.outputConfig.channelConfigs[9].stripAnimation = EXHAUST_FLAME;
   cfg.outputConfig.channelConfigs[9].color = CRGB(255, 0, 0);
-  cfg.outputConfig.channelConfigs[9].colorOrder = GRB;
+  cfg.outputConfig.channelConfigs[9].colorOrder = RGB;
   cfg.outputConfig.channelConfigs[9].stripLedCount = 50;
 
   cfg.outputConfig.channelConfigs[9].roles.reverse = false;
@@ -218,7 +219,7 @@ Config GetDefaultConfig(){
 
   cfg.outputConfig.channelConfigs[10].pin = pinNums[10];
   cfg.outputConfig.channelConfigs[10].type = LED_STRIP;
-  cfg.outputConfig.channelConfigs[10].stripAnimation = POLICE_LIGHTS_WRAP;
+  cfg.outputConfig.channelConfigs[10].stripAnimation = EXHAUST_FLAME;
   cfg.outputConfig.channelConfigs[10].color = CRGB::Blue; //TODO: match to one of the cars
   cfg.outputConfig.channelConfigs[10].colorOrder = GRB;
   cfg.outputConfig.channelConfigs[10].stripLedCount = 50;

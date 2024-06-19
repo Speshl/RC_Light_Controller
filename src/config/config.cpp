@@ -114,6 +114,8 @@ Config LoadConfig(){
   Serial.println("loading saved config");
   Config config;
 
+  config.sysConfig.forcedShutdown = preferences.getBool("shutdown", false);
+
   config.inputConfig.type = InputType(preferences.getChar("1", 0));
   config.inputConfig.steerChannel = preferences.getChar("2", STEER_CHANNEL);
   config.inputConfig.steerInverted = preferences.getBool("3", false);
@@ -170,9 +172,18 @@ Config LoadConfig(){
   return config;
 }
 
+void SaveConfigWithRestart(Config cfg){
+  cfg.sysConfig.forcedShutdown = true;
+  SaveConfig(cfg);
+  Serial.println("Restarting to apply new config...");
+  ESP.restart();
+}
+
 void SaveConfig(Config cfg){
   Serial.println("saving config");
   preferences.putBool("cfgFound", true);
+
+  preferences.putBool("shutdown", cfg.sysConfig.forcedShutdown);
 
   preferences.putChar("1", byte(cfg.inputConfig.type));
   preferences.putChar("2", byte(cfg.inputConfig.steerChannel));
