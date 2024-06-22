@@ -35,9 +35,14 @@ String out10Processor(const String& var);
 String out11Processor(const String& var);
 String out12Processor(const String& var);
 
-Config parseInputConfig(JsonDocument doc);
-Config parseLevelConfig(JsonDocument doc);
-Config parseOutConfig(JsonDocument doc);
+void parseInputConfig(Config *cfg, JsonVariant doc);
+void parseLevelConfig(Config *cfg, JsonVariant doc);
+void parseOutConfig(Config *cfg, JsonVariant doc);
+
+JsonDocument ConfigToJson(Config *cfg);
+JsonDocument InputConfigToJson(Config *cfg);
+JsonDocument LevelConfigToJson(Config *cfg, int levelNum);
+JsonDocument OutConfigToJson(Config *cfg, int outNum);
 
 void SetupWifi(Config cfg);
 void ProcessWifi();

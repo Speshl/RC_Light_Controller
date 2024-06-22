@@ -37,7 +37,6 @@ void SetupWifi(Config cfg){
 
   dnsServer.start(53, "lightconfig", WiFi.softAPIP());
 
-  //buildConfigMap();
   buildInputMap();
   buildLevelMaps();
   buildOutputMaps();
@@ -193,7 +192,7 @@ void SetupWifi(Config cfg){
     clientDetected = true;
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
-    webConfig = parseInputConfig(doc);
+    parseInputConfig(&webConfig, doc);
     request->send(200);
     SaveConfigWithRestart(webConfig);
   });
@@ -208,7 +207,7 @@ void SetupWifi(Config cfg){
     clientDetected = true;
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
-    webConfig = parseLevelConfig(doc);
+    parseLevelConfig(&webConfig, doc);
     request->send(200);
     SaveConfigWithRestart(webConfig);
   });
@@ -223,7 +222,7 @@ void SetupWifi(Config cfg){
     clientDetected = true;
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
-    webConfig = parseOutConfig(doc);
+    parseOutConfig(&webConfig, doc);
     request->send(200);
     SaveConfigWithRestart(webConfig);
   });
@@ -245,10 +244,34 @@ void SetupWifi(Config cfg){
   });
 
   server.on("/powerCycle", HTTP_GET, [](AsyncWebServerRequest *request){
+    clientDetected = true;
     Serial.println("power cycling");
     request->send(200);
     webConfig.sysConfig.forcedShutdown = false;
     ESP.restart();
+  });
+
+  server.on("/export", HTTP_GET, [](AsyncWebServerRequest *request){
+    clientDetected = true;
+    Serial.println("exporting config");
+    JsonDocument doc = ConfigToJson(&webConfig);
+    
+  });
+
+  server.on("/import", HTTP_POST, [](AsyncWebServerRequest *request){
+    //Serial.println("POST request received");
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    // for (size_t i = 0; i < len; i++) {
+    //   Serial.write(data[i]);
+    // }
+
+    clientDetected = true;
+    Serial.println("importing config");
+    JsonDocument doc;
+    deserializeJson(doc, (const char*)data);
+    parseConfig(doc);
+    request->send(200);
+    SaveConfigWithRestart(webConfig);
   });
 
   server.begin();

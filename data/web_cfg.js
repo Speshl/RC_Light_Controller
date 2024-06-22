@@ -30,6 +30,36 @@ function powerCycle() {
     }
 }
 
+function exportConfig() {
+    
+}
+
+function importConfig() {
+    var fileInput = document.getElementById('importFile');
+    var file = fileInput.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var config = JSON.parse(e.target.result);
+        fetch('/importConfig', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            location.reload();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+    }
+    reader.readAsText(file);
+}
+
 function submitFormAsJson() {
     var r = confirm("Are you sure you want to apply changes (only visible tab)? Controller will restart.");
     if (r == true) {
