@@ -11,6 +11,8 @@ std::array<std::map<String, String>, MAX_CHANNELS> outputsMap;
 
 bool clientDetected = false;
 
+String inputDataBuffer;
+
 void WiFiEvent(WiFiEvent_t event) {
     switch(event) {
         case SYSTEM_EVENT_AP_STACONNECTED:
@@ -173,12 +175,20 @@ void SetupWifi(Config cfg){
     request->send(SPIFFS, "/output.htm", String(), false, out12Processor);
   });
 
+  server.on("/utility.htm", HTTP_GET, [](AsyncWebServerRequest *request){
+    //Serial.println("showing utility page");
+    clientDetected = true;
+    request->send(SPIFFS, "/utility.htm", String(), false, inputProcessor);
+  });
+
   server.on("/loadDefaults", HTTP_POST, [](AsyncWebServerRequest *request){
     Serial.println("resetting to defaults");
     clientDetected = true;
     webConfig = GetDefaultConfig();
+    SaveConfig(webConfig);
+    buildMaps();
     request->send(200);
-    SaveConfigWithRestart(webConfig);
+    //SaveConfigWithRestart(webConfig);
   });
 
   //post requests
@@ -193,8 +203,10 @@ void SetupWifi(Config cfg){
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
     parseInputConfig(&webConfig, doc);
+    SaveConfig(webConfig);
+    buildInputMap();
     request->send(200);
-    SaveConfigWithRestart(webConfig);
+    //SaveConfigWithRestart(webConfig);
   });
 
   server.on("/level", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -208,8 +220,10 @@ void SetupWifi(Config cfg){
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
     parseLevelConfig(&webConfig, doc);
+    SaveConfig(webConfig);
+    buildLevelMaps();
     request->send(200);
-    SaveConfigWithRestart(webConfig);
+    //SaveConfigWithRestart(webConfig);
   });
 
   server.on("/output", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -223,8 +237,10 @@ void SetupWifi(Config cfg){
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
     parseOutConfig(&webConfig, doc);
+    SaveConfig(webConfig);
+    buildOutputMaps();
     request->send(200);
-    SaveConfigWithRestart(webConfig);
+    //SaveConfigWithRestart(webConfig);
   });
 
   server.on("/recover", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -239,8 +255,11 @@ void SetupWifi(Config cfg){
     clientDetected = true;
     Serial.println("resetting to defaults");
     webConfig = GetDefaultConfig();
+    SaveConfig(webConfig);
+    buildMaps();
     request->send(SPIFFS, "/web_cfg.htm", String(), false, inputProcessor);
-    SaveConfigWithRestart(webConfig);
+    //SaveConfigWithRestart(webConfig);
+
   });
 
   server.on("/powerCycle", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -255,23 +274,37 @@ void SetupWifi(Config cfg){
     clientDetected = true;
     Serial.println("exporting config");
     JsonDocument doc = ConfigToJson(&webConfig);
+
+    String output;
+    serializeJson(doc, output);
+
+    AsyncWebServerResponse *response = request->beginResponse(200, "application/json", output);
+    response->addHeader("Content-Disposition", "attachment; filename=config.json");
     
+    request->send(response);
   });
 
   server.on("/import", HTTP_POST, [](AsyncWebServerRequest *request){
     //Serial.println("POST request received");
-  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
-    // for (size_t i = 0; i < len; i++) {
-    //   Serial.write(data[i]);
-    // }
-
+    inputDataBuffer = "";
     clientDetected = true;
     Serial.println("importing config");
-    JsonDocument doc;
-    deserializeJson(doc, (const char*)data);
-    parseConfig(doc);
-    request->send(200);
-    SaveConfigWithRestart(webConfig);
+  }, NULL, [](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total) {
+    for (size_t i = 0; i < len; i++) {
+      inputDataBuffer += (char)data[i];
+    }
+    Serial.println("Total length: " + String(total) + " Index: " + String(index) + " Length: " + String(len));
+    
+    if(index + len == total){
+      Serial.println("Total data received");
+      JsonDocument doc;
+      deserializeJson(doc, inputDataBuffer);
+      webConfig = parseConfig(doc);
+      SaveConfig(webConfig);
+      buildMaps();
+      request->send(200);
+      //SaveConfigWithRestart(webConfig);
+    }
   });
 
   server.begin();

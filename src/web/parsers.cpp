@@ -27,12 +27,15 @@ Config parseConfig(JsonDocument doc){
   parseInputConfig(&cfg, doc["input_config"]);
 
   JsonArray levelCfgs = doc["level_configs"];
+  //Serial.println("Parsing " + String(levelCfgs.size()) + " level configs");
   for(int i=0; i<levelCfgs.size(); i++){
     parseLevelConfig(&cfg, levelCfgs[i]);
   }
 
   JsonArray outCfgs = doc["out_configs"];
+  //Serial.println("Parsing " + String(outCfgs.size()) + " out configs");
   for(int i=0; i<outCfgs.size(); i++){
+    //Serial.println("Parsing out config " + String(i));
     parseOutConfig(&cfg, outCfgs[i]);
   }
 
@@ -158,6 +161,8 @@ void parseOutConfig(Config *cfg, JsonVariant doc){
     }
     
     i--; // 0 based index
+
+    Serial.println("Parsing out config for channel " + String(i+1));
         
     cfg->outputConfig.channelConfigs[i].type = doc["out_type"] == "single" ? SINGLE_LED : LED_STRIP;
 
@@ -213,7 +218,7 @@ JsonDocument InputConfigToJson(Config *cfg){
   JsonDocument inputCfg;
   inputCfg["signal_type"] = cfg->inputConfig.type == SBUS ? "SBUS" : "CRSF";
   inputCfg["steer_channel"] = cfg->inputConfig.steerChannel;
-  inputCfg["invert_steer"] = cfg->inputConfig.steerInverted ? "on" : "off";
+  inputCfg["invert_steer"] =  cfg->inputConfig.steerInverted ? "on" : "off";
   inputCfg["esc_channel"] = cfg->inputConfig.escChannel;
   inputCfg["invert_esc"] = cfg->inputConfig.escInverted ? "on" : "off";
   inputCfg["trigger_channel"] = cfg->inputConfig.enableChannel;
@@ -224,7 +229,7 @@ JsonDocument InputConfigToJson(Config *cfg){
 JsonDocument LevelConfigToJson(Config *cfg, int levelNum){
   JsonDocument levelCfg;
 
-  levelCfg["level_num"] = String(levelNum);
+  levelCfg["level_num"] = String(levelNum+1);
   levelCfg["level_leftTurn"] = cfg->levelConfigs[levelNum].roles.leftTurn ? "on" : "off";
   levelCfg["level_rightTurn"] = cfg->levelConfigs[levelNum].roles.rightTurn ? "on" : "off";
   levelCfg["level_brake"] = cfg->levelConfigs[levelNum].roles.brake ? "on" : "off";
@@ -249,7 +254,7 @@ JsonDocument LevelConfigToJson(Config *cfg, int levelNum){
 JsonDocument OutConfigToJson(Config *cfg, int outNum){
   JsonDocument outCfg;
 
-  outCfg["out_num"] = String(outNum);
+  outCfg["out_num"] = String(outNum+1);
   outCfg["out_type"] = cfg->outputConfig.channelConfigs[outNum].type == SINGLE_LED ? "single" : "strip";
   outCfg["out_order"] = String(cfg->outputConfig.channelConfigs[outNum].stripAnimation);
   outCfg["out_num_leds"] = String(cfg->outputConfig.channelConfigs[outNum].stripLedCount);

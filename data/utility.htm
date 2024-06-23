@@ -1,0 +1,18 @@
+<div id="utility" class="center maintabcontent show">
+    <div class="smallpad">
+        <input type="button" value="Export" onclick="exportConfig();">
+    </div>
+    <div class="smallpad">
+        <input type="file" id="importFile" style="display: none;"/>
+        <input type="button" value="Import" id="importButton">
+    </div>
+    <div class="smallpad">
+        <input type="button" value="Load Defaults" onclick="loadDefaults();">
+    </div>
+    <div class="smallpad">
+        <input type="button" value="Power Cycle" onclick="powerCycle();">
+    </div>
+    <div class="smallpad">
+        <input type="button" value="Reset" onclick="if(confirm('Are you sure you want to reload the page? Unapplied settings will be lost.')) location.reload();">
+    </div>  
+</div>

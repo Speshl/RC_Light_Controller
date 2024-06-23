@@ -6,6 +6,12 @@ extern std::map<String, String> inputMap;
 extern std::array<std::map<String, String>, NUM_LEVELS> levelsMap;
 extern std::array<std::map<String, String>, MAX_CHANNELS> outputsMap;
 
+void buildMaps(){
+  buildInputMap();
+  buildLevelMaps();
+  buildOutputMaps();
+}
+
 void buildInputMap(){
   if(webConfig.inputConfig.type == CRSF){
       inputMap["INPUT_CRSF"] = "selected";

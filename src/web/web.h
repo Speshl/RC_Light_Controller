@@ -14,6 +14,7 @@
 #define GATEWAY IPAddress(192, 168, 4, 20)
 #define SUBNET IPAddress(255, 255, 255, 0)
 
+void buildMaps();
 void buildInputMap();
 void buildLevelMaps();
 void buildOutputMaps();
