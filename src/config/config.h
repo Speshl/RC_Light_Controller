@@ -175,36 +175,50 @@ enum FlameType {
   POP_FLAME
 };
 
-struct AnimationState {
-  bool leftTurnOn;
-  bool leftTurnBlinkOn;
-  unsigned long leftTurnStartTime;
+struct BlinkState{
+  bool on;
+  bool blinkOn;
+  unsigned long startTime;
+};
 
-  bool rightTurnOn;
-  bool rightTurnBlinkOn;
-  unsigned long rightTurnStartTime;
+struct RoleStates{
+  BlinkState leftTurn;
+  BlinkState rightTurn;
+  BlinkState hazards;
+  BlinkState strobe1;
+  BlinkState strobe2;
+};
 
-  bool hazardsOn;
-  bool hazardsBlinkOn;
-  unsigned long hazardsStartTime;
-
-  bool strobe1BlinkOn;
-  bool strobe2BlinkOn;
-
-  int flameIntensity;
-  CRGBPalette16 flamePalette;
+struct FlameState {
+  int intensity;
+  CRGBPalette16 palette;
+  FlameType type;
+  FlameType lastType;
+  unsigned long startTime;
   int lastEscValue;
   int lastMaxEscValue;
-  FlameType currentFlameType;
-  FlameType lastFlameType;
-  unsigned long flameStartTime;
+};
 
-  CRGB underglowCycleColor;
-  int underglowPalletePos;
+struct UnderglowState {
+  CRGB color;
+  CRGBPalette16 palette;
+  int palettePos;
+};
 
-  int wrapPoliceStrobePos;
-  unsigned long wrapPoliceLightLastChange;
-  bool solidPoliceAlternateColor;
+struct PoliceState {
+  int strobePos;
+  unsigned long lastStrobeChange;
+
+  bool solidAlternateColor;
+};
+
+struct AnimationState {
+
+  RoleStates roleStates;
+
+  FlameState flame;
+  UnderglowState underglow;
+  PoliceState police;
 };
 
 struct OutputChannelConfig {
