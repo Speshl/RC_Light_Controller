@@ -16,6 +16,8 @@ void SetupInitialStartState(State* state);
 void ApplyInputToState(State* state, InputValues input);
 bool UpdatePauseState(bool currentPauseState);
 void PrintState(State* state);
+void ApplyDemoInput(State* state);
+void SetInitialInput(State* state);
 
 
 int main() {
@@ -44,6 +46,8 @@ void setup() {
   SetupWifi(state.config);
   //setup led outputs
   SetupOutput(state.config);
+
+  SetInitialInput(&state);
 
   Serial.println("start up complete");
 }
@@ -97,35 +101,41 @@ void SetupInitialStartState(State* state){
 
 void ApplyInputToState(State* state, InputValues input){
   unsigned long currentTime = millis();
-  bool updateFound = false;
-  //check if different from current state
-  if(input.steer != state->inputValues.steer){
-    updateFound = true;
-  }else if(input.esc != state->inputValues.esc){
-    updateFound = true;
-  }else if(input.level != state->inputValues.level){
-    updateFound = true;
-  }else if(input.enabled != state->inputValues.enabled){
-    updateFound = true;
-  }
 
-  if(!updateFound){
-    if(currentTime - state->inputValues.lastUpdate > TIME_TIL_FLASH){
-      state->inputState.hazards = true;
+  if( ENABLE_DEMO_MODE && currentTime - input.lastUpdate > TIME_TIL_DEMO){
+    state->inputState.hazards = false;
+    ApplyDemoInput(state);
+    input = state->demoState.inputValues;
+  }else {
+    bool updateFound = false;
+    //check if different from current state
+    if(input.steer != state->inputValues.steer){
+      updateFound = true;
+    }else if(input.esc != state->inputValues.esc){
+      updateFound = true;
+    }else if(input.level != state->inputValues.level){
+      updateFound = true;
+    }else if(input.enabled != state->inputValues.enabled){
+      updateFound = true;
     }
-    return;
+
+    if(!updateFound){
+      if(currentTime - state->inputValues.lastUpdate > TIME_TIL_FLASH){
+        state->inputState.hazards = true;
+      }
+      return;
+    }
+
+    //PrintInput(input);
+
+    state->inputValues.steer = input.steer;
+    state->inputValues.esc = input.esc;
+    state->inputValues.level = input.level;
+    state->inputValues.enabled = input.enabled;
+
+    state->inputState.hazards = false;
+    state->inputValues.lastUpdate = input.lastUpdate;
   }
-
-  //PrintInput(input);
-
-  state->inputValues.steer = input.steer;
-  state->inputValues.esc = input.esc;
-  state->inputValues.level = input.level;
-  state->inputValues.enabled = input.enabled;
-
-  state->inputState.hazards = false;
-  state->inputValues.lastUpdate = input.lastUpdate;
-
 
   state->inputState.enabled = input.enabled > INPUT_MID+LEVEL_THRESHOLD;
 
@@ -160,5 +170,87 @@ void PrintState(State* state){
   Serial.println(state->inputState.hazards);
   Serial.print("Brakes: ");
   Serial.println(state->inputState.brakes);
+  return;
+}
+
+void ApplyDemoInput(State* state){
+  Serial.print("Demo Step: ");
+  Serial.println(state->demoState.step);
+
+  switch(state->demoState.step){
+    case 0:
+      Serial.println("Demo Mode");
+      state->demoState.inputValues.enabled = 1000;
+      state->demoState.inputValues.level = 0;
+      state->demoState.inputValues.steer = 0;
+      state->demoState.inputValues.esc = 0;
+      state->demoState.step++;
+      break;
+
+    case 1:
+    case 6:
+    case 11:
+      state->demoState.inputValues.steer ++;
+      if(state->demoState.inputValues.steer > INPUT_HIGH){
+        state->demoState.inputValues.steer = INPUT_HIGH;
+        state->demoState.step++;
+      }
+      break;
+
+    case 2:
+    case 7:
+    case 12:
+      state->demoState.inputValues.steer --;
+      if(state->demoState.inputValues.steer < INPUT_LOW){
+        state->demoState.inputValues.steer = INPUT_LOW;
+        state->demoState.step++;
+      }
+      break;
+
+    case 3:
+    case 8:
+    case 13:
+      state->demoState.inputValues.esc ++;
+      if(state->demoState.inputValues.esc > INPUT_HIGH){
+        state->demoState.inputValues.esc = INPUT_HIGH;
+        state->demoState.step++;
+      }
+      break;
+
+    case 4:
+    case 9:
+    case 14:
+      state->demoState.inputValues.esc --;
+      if(state->demoState.inputValues.esc < INPUT_LOW){
+        state->demoState.inputValues.esc = INPUT_LOW;
+        state->demoState.step++;
+      }
+      break;
+
+    case 5:
+    case 10:
+    case 15:
+      state->demoState.inputValues.level += INPUT_MID;
+      state->demoState.step++;
+      if(state->demoState.inputValues.level > INPUT_HIGH){
+        state->demoState.inputValues.level = INPUT_LOW;
+        state->demoState.step = 0;
+      }
+      break;
+  }
+}
+
+void SetInitialInput(State* state){
+  state->inputValues.steer = INPUT_MID;
+  state->inputValues.esc = INPUT_MID;
+  state->inputValues.level = 0;
+  state->inputValues.enabled = INPUT_HIGH;
+  state->inputValues.lastUpdate = millis();
+
+  state->demoState.inputValues.steer = INPUT_MID;
+  state->demoState.inputValues.esc = INPUT_MID;
+  state->demoState.inputValues.level = 0;
+  state->demoState.inputValues.enabled = INPUT_HIGH;
+  state->demoState.inputValues.lastUpdate = millis();
   return;
 }

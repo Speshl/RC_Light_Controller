@@ -104,7 +104,7 @@ void showSingleLED(State* state, int channel){
     }
 
     if(channelCfg.roles.tail && levelCfg.roles.tail){
-        analogWrite(channelCfg.pin, 100); // low power for tail lights
+        analogWrite(channelCfg.pin, 75); // low power for tail lights
         return;
     }
 
@@ -355,21 +355,21 @@ void showPoliceLightsWrap(State* state, int channel){ //Split
     }
 
     for(int i=0;i<channelCfg.stripLedCount;i++){
-        CRGB color = CRGB(0,0,255);
-        CRGB dimColor = CRGB(0,0,0);
+        CRGB color = CRGB::Blue;
+        CRGB dimColor = CRGB::Black;
         if(i > channelCfg.stripLedCount/2){
-            color = CRGB(255,0,0);
-            dimColor = CRGB(0,0,0);
+            color = CRGB::Blue;
+            dimColor = CRGB::Black;
         }
 
         if((state->animationState.police.strobePos == 0 || state->animationState.police.strobePos == 2)){
-            if(i <= channelCfg.stripLedCount/2){
+            if(i < channelCfg.stripLedCount/2){
                 led_strips[channel][i] = CRGB::Black;
             }else{
                 led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
             }
         }else if((state->animationState.police.strobePos == 3 || state->animationState.police.strobePos == 5)){
-            if(i > channelCfg.stripLedCount/2){
+            if(i >= channelCfg.stripLedCount/2){
                 led_strips[channel][i] = CRGB::Black;
             }else{
                 led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);

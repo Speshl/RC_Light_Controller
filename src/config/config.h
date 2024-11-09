@@ -4,6 +4,9 @@
 #include <FastLED.h>
 #include <Preferences.h>
 
+#define ENABLE_DEMO_MODE true
+#define TIME_TIL_DEMO 5000
+
 //led strip configs
 #define COLOR_ORDER RGB
 #define CHIPSET WS2812B
@@ -246,14 +249,19 @@ struct Config {
   LevelConfig levelConfigs[NUM_LEVELS];
 };
 
+struct DemoState{
+  int step;
+  InputValues inputValues;
+};
+
 struct State{
   Config config;
 
   InputValues inputValues;
   InputState inputState;
   AnimationState animationState;
+  DemoState demoState;
 };
-
 
 Config GetDefaultConfig();
 

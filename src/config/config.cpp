@@ -243,10 +243,10 @@ Config CreateOrLoadCfg(){
   preferences.begin("rclc", false);
   bool cfgFound = preferences.getBool("cfgFound", false);
   if(cfgFound){
+    //config = LoadConfig();
+    config = GetDefaultConfig();
+    SaveConfig(config);
     config = LoadConfig();
-    // config = GetDefaultConfig();
-    // SaveConfig(config);
-    // config = LoadConfig();
   }else{
     config = GetDefaultConfig();
     SaveConfig(config);
