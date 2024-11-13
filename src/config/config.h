@@ -2,7 +2,12 @@
 #define CONFIG_H
 #include "Arduino.h"
 #include <FastLED.h>
-#include <Preferences.h>
+// #include <Preferences.h>
+#include <SPIFFS.h>
+#include <ArduinoJson.h> // ArduinoJson library
+
+#define DEFAULT_CONFIG_FILE_PATH "/defaults/default.json"
+#define CONFIG_FILE_PATH "/config/config.json"
 
 #define ENABLE_DEMO_MODE true
 #define TIME_TIL_DEMO 5000
@@ -265,7 +270,23 @@ struct State{
 
 Config GetDefaultConfig();
 
+Config GetBaseConfig();
+
 Config CreateOrLoadCfg();
+
+void PrintConfig(Config cfg);
+
+const char* ColorOrderToString(EOrder order);
+
+Config parseConfig(JsonDocument doc);
+void parseInputConfig(Config *cfg, JsonVariant doc);
+void parseLevelConfig(Config *cfg, JsonVariant doc);
+void parseOutConfig(Config *cfg, JsonVariant doc);
+
+JsonDocument ConfigToJson(Config *cfg);
+JsonDocument InputConfigToJson(Config *cfg);
+JsonDocument LevelConfigToJson(Config *cfg, int levelNum);
+JsonDocument OutConfigToJson(Config *cfg, int outNum);
 
 void SaveConfig(Config cfg);
 

@@ -173,9 +173,24 @@ void PrintState(State* state){
   return;
 }
 
+void SetInitialInput(State* state){
+  state->inputValues.steer = INPUT_MID;
+  state->inputValues.esc = INPUT_MID;
+  state->inputValues.level = 0;
+  state->inputValues.enabled = INPUT_HIGH;
+  state->inputValues.lastUpdate = millis();
+
+  state->demoState.inputValues.steer = INPUT_MID;
+  state->demoState.inputValues.esc = INPUT_MID;
+  state->demoState.inputValues.level = 0;
+  state->demoState.inputValues.enabled = INPUT_HIGH;
+  state->demoState.inputValues.lastUpdate = millis();
+  return;
+}
+
 void ApplyDemoInput(State* state){
-  Serial.print("Demo Step: ");
-  Serial.println(state->demoState.step);
+  // Serial.print("Demo Step: ");
+  // Serial.println(state->demoState.step);
 
   switch(state->demoState.step){
     case 0:
@@ -238,19 +253,4 @@ void ApplyDemoInput(State* state){
       }
       break;
   }
-}
-
-void SetInitialInput(State* state){
-  state->inputValues.steer = INPUT_MID;
-  state->inputValues.esc = INPUT_MID;
-  state->inputValues.level = 0;
-  state->inputValues.enabled = INPUT_HIGH;
-  state->inputValues.lastUpdate = millis();
-
-  state->demoState.inputValues.steer = INPUT_MID;
-  state->demoState.inputValues.esc = INPUT_MID;
-  state->demoState.inputValues.level = 0;
-  state->demoState.inputValues.enabled = INPUT_HIGH;
-  state->demoState.inputValues.lastUpdate = millis();
-  return;
 }
