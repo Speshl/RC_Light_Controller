@@ -52,7 +52,7 @@ void showSingleLED(State* state, int channel){
     }
 
     if(channelCfg.roles.hazard && levelCfg.roles.hazard && state->inputState.hazards){
-        if(state->animationState.hazardsBlinkOn){
+        if(state->animationState.roleStates.hazards.blinkOn){
             analogWrite(channelCfg.pin, 255);
         }else{
             analogWrite(channelCfg.pin, 0);
@@ -66,7 +66,7 @@ void showSingleLED(State* state, int channel){
     }
 
     if(channelCfg.roles.leftTurn && levelCfg.roles.leftTurn && state->inputState.leftTurn){
-        if(state->animationState.leftTurnBlinkOn){
+        if(state->animationState.roleStates.leftTurn.blinkOn){
             analogWrite(channelCfg.pin, 255);
         }else{
             analogWrite(channelCfg.pin, 0);
@@ -75,7 +75,7 @@ void showSingleLED(State* state, int channel){
     }
 
     if(channelCfg.roles.rightTurn && levelCfg.roles.rightTurn && state->inputState.rightTurn){
-        if(state->animationState.rightTurnBlinkOn){
+        if(state->animationState.roleStates.rightTurn.blinkOn){
             analogWrite(channelCfg.pin, 255);
         }else{
             analogWrite(channelCfg.pin, 0);
@@ -83,12 +83,12 @@ void showSingleLED(State* state, int channel){
         return;
     }
 
-    if(channelCfg.roles.strobe1 && levelCfg.roles.strobe1 && state->animationState.strobe1BlinkOn){
+    if(channelCfg.roles.strobe1 && levelCfg.roles.strobe1 && state->animationState.roleStates.strobe1.blinkOn){
         analogWrite(channelCfg.pin, 255);
         return;
     }
 
-    if(channelCfg.roles.strobe2 && levelCfg.roles.strobe2 && state->animationState.strobe2BlinkOn){
+    if(channelCfg.roles.strobe2 && levelCfg.roles.strobe2 && state->animationState.roleStates.strobe2.blinkOn){
         analogWrite(channelCfg.pin, 255);
         return;
     }
@@ -104,7 +104,7 @@ void showSingleLED(State* state, int channel){
     }
 
     if(channelCfg.roles.tail && levelCfg.roles.tail){
-        analogWrite(channelCfg.pin, 100); // low power for tail lights
+        analogWrite(channelCfg.pin, 75); // low power for tail lights
         return;
     }
 
@@ -174,7 +174,7 @@ void showUnderglowCycle(State* state, int channel){
     }
 
     for(int i=0;i<NUM_STRIP_LEDS;i++){
-        led_strips[channel][i] = reorderColor(state->animationState.underglowCycleColor, channelCfg.colorOrder);
+        led_strips[channel][i] = reorderColor(state->animationState.underglow.color, channelCfg.colorOrder);
     }
 }
 
@@ -308,7 +308,7 @@ void showExhaustFlame(State* state, int channel){
         return;
     }
 
-    if(state->animationState.flameIntensity == 0 || state->animationState.currentFlameType == NO_FLAME){
+    if(state->animationState.flame.intensity == 0 || state->animationState.flame.type == NO_FLAME){
         //Serial.println("No Flame");
         return clearStrip(channel);
     }
@@ -318,9 +318,9 @@ void showExhaustFlame(State* state, int channel){
     // Serial.print("Flame Type: ");
     // Serial.println(state->animationState.currentFlameType);
 
-    uint8_t mappedIntensity = map(state->animationState.flameIntensity,0,MAX_EXHAUST_INTENSITY,0,255);
+    uint8_t mappedIntensity = map(state->animationState.flame.intensity,0,MAX_EXHAUST_INTENSITY,0,255);
     //CRGB flameColor = HeatColor(mappedIntensity);
-    CRGB flameColor = ColorFromPalette(state->animationState.flamePalette, mappedIntensity);
+    CRGB flameColor = ColorFromPalette(state->animationState.flame.palette, mappedIntensity);
     for(int i=0; i<NUM_STRIP_LEDS; i++){
         led_strips[channel][i] = reorderColor(flameColor, channelCfg.colorOrder);
     }
@@ -336,7 +336,7 @@ void showPoliceLightsSolid(State* state, int channel){
     }
 
     CRGB color = CRGB::Red;
-    if(state->animationState.solidPoliceAlternateColor){
+    if(state->animationState.police.solidAlternateColor){
         color = CRGB::Blue;
     }
 
@@ -344,44 +344,6 @@ void showPoliceLightsSolid(State* state, int channel){
         led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
     }
 }
-
-// void showPoliceLightsWrap(State* state, int channel){ //Split
-//     OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-//     LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-//     if(!state->inputState.enabled || !levelCfg.animations.policeLights){
-//         clearStrip(channel);
-//         return;
-//     }
-
-//     for(int i=0;i<channelCfg.stripLedCount;i++){
-//         CRGB color = CRGB(0,0,255);
-//         CRGB dimColor = CRGB(0,0,0);
-//         if(i > channelCfg.stripLedCount/2){
-//             color = CRGB(255,0,0);
-//             dimColor = CRGB(0,0,0);
-//         }
-
-//         bool isEven = true;
-//         if(i % 2 == 1){
-//             isEven = false;
-//         }
-
-//         if(state->animationState.wrapPoliceStrobePos == 2){
-//             led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
-//         }else if(isEven && state->animationState.wrapPoliceStrobePos == 0){
-//             led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
-//         }else if(isEven && state->animationState.wrapPoliceStrobePos == 1){
-//             led_strips[channel][i] = reorderColor(dimColor, channelCfg.colorOrder);
-//         }else if(!isEven && state->animationState.wrapPoliceStrobePos == 0){
-//             led_strips[channel][i] = reorderColor(dimColor, channelCfg.colorOrder);
-//         }else if(!isEven && state->animationState.wrapPoliceStrobePos == 1){
-//             led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
-//         }else{
-//             Serial.println("Missed Case");
-//         }
-//     }
-// }
 
 void showPoliceLightsWrap(State* state, int channel){ //Split
     OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
@@ -393,21 +355,21 @@ void showPoliceLightsWrap(State* state, int channel){ //Split
     }
 
     for(int i=0;i<channelCfg.stripLedCount;i++){
-        CRGB color = CRGB(0,0,255);
-        CRGB dimColor = CRGB(0,0,0);
+        CRGB color = CRGB::Blue;
+        CRGB dimColor = CRGB::Black;
         if(i > channelCfg.stripLedCount/2){
-            color = CRGB(255,0,0);
-            dimColor = CRGB(0,0,0);
+            color = CRGB::Blue;
+            dimColor = CRGB::Black;
         }
 
-        if((state->animationState.wrapPoliceStrobePos == 0 || state->animationState.wrapPoliceStrobePos == 2)){
-            if(i <= channelCfg.stripLedCount/2){
+        if((state->animationState.police.strobePos == 0 || state->animationState.police.strobePos == 2)){
+            if(i < channelCfg.stripLedCount/2){
                 led_strips[channel][i] = CRGB::Black;
             }else{
                 led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
             }
-        }else if((state->animationState.wrapPoliceStrobePos == 3 || state->animationState.wrapPoliceStrobePos == 5)){
-            if(i > channelCfg.stripLedCount/2){
+        }else if((state->animationState.police.strobePos == 3 || state->animationState.police.strobePos == 5)){
+            if(i >= channelCfg.stripLedCount/2){
                 led_strips[channel][i] = CRGB::Black;
             }else{
                 led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);

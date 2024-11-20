@@ -11,17 +11,12 @@
         <h1>Light Configuration</h1>
         <div class="maintablist">
             <button id="inputTabButton" type="button" class="maintablinks active" hx-get="input.htm" hx-trigger="click" hx-target="#tabContent" hx-swap="innerHTML">Input</button>
-            <button id="levelTabButton" type="button" class="maintablinks" hx-get="levels.htm" hx-trigger="click" hx-target="#tabContent" hx-swap="innerHTML" hx-on::after-settled="loadDefaultLevel()">Levels</button>
+            <button id="levelTabButton" type="button" class="maintablinks" hx-get="levels.htm" hx-trigger="click" hx-target="#tabContent" hx-swap="innerHTML">Levels</button>
             <button id="outputTabButton" type="button" class="maintablinks" hx-get="outputs.htm" hx-trigger="click" hx-target="#tabContent" hx-swap="innerHTML">Output</button>
+            <button id="utilityTabButton" type="button" class="maintablinks" hx-get="utility.htm" hx-trigger="click" hx-target="#tabContent" hx-swap="innerHTML">Utility</button>
         </div>
 
         <div id="tabContent" class="maintabcontent show" hx-on="htmx:afterSettle: loadDefaultTab()"></div>
-
-        <div class="buttoncontainer">
-            <input type="button" value="Load Defaults" onclick="loadDefaults();">
-            <input type="button" value="Power Cycle" onclick="powerCycle();">
-            <input type="button" value="Reset" onclick="if(confirm('Are you sure you want to reload the page? Unapplied settings will be lost.')) location.reload();">
-        </div>
     </div>
 </body>
 </html>

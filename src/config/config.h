@@ -2,7 +2,15 @@
 #define CONFIG_H
 #include "Arduino.h"
 #include <FastLED.h>
-#include <Preferences.h>
+// #include <Preferences.h>
+#include <SPIFFS.h>
+#include <ArduinoJson.h> // ArduinoJson library
+
+#define DEFAULT_CONFIG_FILE_PATH "/defaults/default.json"
+#define CONFIG_FILE_PATH "/config/config.json"
+
+#define ENABLE_DEMO_MODE true
+#define TIME_TIL_DEMO 5000
 
 //led strip configs
 #define COLOR_ORDER RGB
@@ -175,36 +183,50 @@ enum FlameType {
   POP_FLAME
 };
 
-struct AnimationState {
-  bool leftTurnOn;
-  bool leftTurnBlinkOn;
-  unsigned long leftTurnStartTime;
+struct BlinkState{
+  bool on;
+  bool blinkOn;
+  unsigned long startTime;
+};
 
-  bool rightTurnOn;
-  bool rightTurnBlinkOn;
-  unsigned long rightTurnStartTime;
+struct RoleStates{
+  BlinkState leftTurn;
+  BlinkState rightTurn;
+  BlinkState hazards;
+  BlinkState strobe1;
+  BlinkState strobe2;
+};
 
-  bool hazardsOn;
-  bool hazardsBlinkOn;
-  unsigned long hazardsStartTime;
-
-  bool strobe1BlinkOn;
-  bool strobe2BlinkOn;
-
-  int flameIntensity;
-  CRGBPalette16 flamePalette;
+struct FlameState {
+  int intensity;
+  CRGBPalette16 palette;
+  FlameType type;
+  FlameType lastType;
+  unsigned long startTime;
   int lastEscValue;
   int lastMaxEscValue;
-  FlameType currentFlameType;
-  FlameType lastFlameType;
-  unsigned long flameStartTime;
+};
 
-  CRGB underglowCycleColor;
-  int underglowPalletePos;
+struct UnderglowState {
+  CRGB color;
+  CRGBPalette16 palette;
+  int palettePos;
+};
 
-  int wrapPoliceStrobePos;
-  unsigned long wrapPoliceLightLastChange;
-  bool solidPoliceAlternateColor;
+struct PoliceState {
+  int strobePos;
+  unsigned long lastStrobeChange;
+
+  bool solidAlternateColor;
+};
+
+struct AnimationState {
+
+  RoleStates roleStates;
+
+  FlameState flame;
+  UnderglowState underglow;
+  PoliceState police;
 };
 
 struct OutputChannelConfig {
@@ -232,18 +254,39 @@ struct Config {
   LevelConfig levelConfigs[NUM_LEVELS];
 };
 
+struct DemoState{
+  int step;
+  InputValues inputValues;
+};
+
 struct State{
   Config config;
 
   InputValues inputValues;
   InputState inputState;
   AnimationState animationState;
+  DemoState demoState;
 };
-
 
 Config GetDefaultConfig();
 
+Config GetBaseConfig();
+
 Config CreateOrLoadCfg();
+
+void PrintConfig(Config cfg);
+
+const char* ColorOrderToString(EOrder order);
+
+Config parseConfig(JsonDocument doc);
+void parseInputConfig(Config *cfg, JsonVariant doc);
+void parseLevelConfig(Config *cfg, JsonVariant doc);
+void parseOutConfig(Config *cfg, JsonVariant doc);
+
+JsonDocument ConfigToJson(Config *cfg);
+JsonDocument InputConfigToJson(Config *cfg);
+JsonDocument LevelConfigToJson(Config *cfg, int levelNum);
+JsonDocument OutConfigToJson(Config *cfg, int outNum);
 
 void SaveConfig(Config cfg);
 

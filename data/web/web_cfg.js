@@ -30,6 +30,62 @@ function powerCycle() {
     }
 }
 
+function exportConfig() {
+    fetch('/export')
+        .then(response => response.blob())
+        .then(blob => {
+            // Create a new URL for the blob
+            const url = window.URL.createObjectURL(blob);
+            // Create a temporary anchor element
+            const a = document.createElement('a');
+            // Set the href to the blob URL
+            a.href = url;
+            // Set the download attribute to the desired file name
+            a.download = 'config.json';
+            // Append the anchor to the body
+            document.body.appendChild(a);
+            // Trigger the download
+            a.click();
+            // Remove the anchor from the body
+            document.body.removeChild(a);
+            // Release the blob URL
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => console.error('Error downloading the config:', error));
+}
+
+function importConfig() {
+    var fileInput = document.getElementById('importFile');
+    var file = fileInput.files[0];
+    if (!file) {
+        alert('Please select a file before clicking "Import Config"');
+        return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var config = JSON.parse(e.target.result);
+        fetch('/import', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            alert('Config imported successfully');
+            location.reload();
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            alert('Failed to import config');
+        });
+    }
+    reader.readAsText(file);
+}
+
 function submitFormAsJson() {
     var r = confirm("Are you sure you want to apply changes (only visible tab)? Controller will restart.");
     if (r == true) {
@@ -73,6 +129,20 @@ function showHideFieldSets(){
 }
 
 function loadDefaultTab(){
+    importButton = document.getElementById('importButton');
+    if (importButton) {
+        importButton.addEventListener('click', function() {
+            document.getElementById('importFile').click();
+        });
+    }
+
+    importFile = document.getElementById('importFile');
+    if (importFile) {
+        importFile.addEventListener('change', function() {
+            importConfig();
+        });
+    }
+
     level1Button = document.getElementById('level1TabButton');
     firstLoadLevel = true;
     for (let i = 1; i <= 3; i++) {

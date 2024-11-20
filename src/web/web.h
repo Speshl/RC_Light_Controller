@@ -14,30 +14,11 @@
 #define GATEWAY IPAddress(192, 168, 4, 20)
 #define SUBNET IPAddress(255, 255, 255, 0)
 
-void buildInputMap();
-void buildLevelMaps();
-void buildOutputMaps();
+void buildMaps(Config* webConfig);
 
 String inputProcessor(const String& var);
-String level1Processor(const String& var);
-String level2Processor(const String& var);
-String level3Processor(const String& var);
-String out1Processor(const String& var);
-String out2Processor(const String& var);
-String out3Processor(const String& var);
-String out4Processor(const String& var);
-String out5Processor(const String& var);
-String out6Processor(const String& var);
-String out7Processor(const String& var);
-String out8Processor(const String& var);
-String out9Processor(const String& var);
-String out10Processor(const String& var);
-String out11Processor(const String& var);
-String out12Processor(const String& var);
-
-Config parseInputConfig(JsonDocument doc);
-Config parseLevelConfig(JsonDocument doc);
-Config parseOutConfig(JsonDocument doc);
+std::function<String(const String&)> createLevelProcessor(int level);
+std::function<String(const String&)> createOutputProcessor(int output);
 
 void SetupWifi(Config cfg);
 void ProcessWifi();
