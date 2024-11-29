@@ -8,9 +8,10 @@
 
 #define DEFAULT_CONFIG_FILE_PATH "/defaults/default.json"
 #define CONFIG_FILE_PATH "/config/config.json"
+#define FORCE_FILE_PATH "/config/forced.json"
 
 #define ENABLE_DEMO_MODE true
-#define TIME_TIL_DEMO 5000
+#define TIME_TIL_DEMO 15000
 
 //led strip configs
 #define COLOR_ORDER RGB
@@ -174,6 +175,7 @@ struct InputState {
   bool rightTurn;
   bool hazards;
   bool brakes;
+  bool reverse;
 };
 
 enum FlameType {

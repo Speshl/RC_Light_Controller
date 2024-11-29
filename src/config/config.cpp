@@ -90,7 +90,13 @@ Config CreateOrLoadCfg(){
     while(true);
   }
 
- if (!SPIFFS.exists(CONFIG_FILE_PATH)) {
+  if (SPIFFS.exists(FORCE_FILE_PATH)) {
+    Serial.println("FORCED CONFIG DETECTED");
+    config = loadConfigFromFile(FORCE_FILE_PATH);
+    return config;
+  }
+
+  if (!SPIFFS.exists(CONFIG_FILE_PATH)) {
     Serial.println("Config file not found, creating from defaults");
     config = GetDefaultConfig();
     saveConfigToFile(&config, CONFIG_FILE_PATH);

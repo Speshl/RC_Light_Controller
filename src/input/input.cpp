@@ -32,7 +32,6 @@ void handleCRSFUpdate(){
     latestInput.enabled = getCRSFValueWithDeadzone(enabled);
 
     latestInput.lastUpdate = millis();
-
     //PrintInput(latestInput);
 }
 
@@ -41,7 +40,7 @@ void SetupInput(Config* config){
     inputConfig = config->inputConfig;
     switch(config->inputConfig.type){
         case SBUS:
-            Serial.println("Setting up SBUS");
+            Serial.println("Setting up SBUS (but not implemented yet)");
             //TODO: Implement SBUS
             break;
         case CRSF:
