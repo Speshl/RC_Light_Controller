@@ -90,7 +90,7 @@ Config CreateOrLoadCfg(){
     while(true);
   }
 
-  if (SPIFFS.exists(FORCE_FILE_PATH)) {
+  if (SPIFFS.exists(FORCE_FILE_PATH) && ENABLE_FORCE_CONFIG){
     Serial.println("FORCED CONFIG DETECTED");
     config = loadConfigFromFile(FORCE_FILE_PATH);
     return config;

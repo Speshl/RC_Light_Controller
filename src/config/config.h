@@ -6,6 +6,7 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h> // ArduinoJson library
 
+#define ENABLE_FORCE_CONFIG true
 #define DEFAULT_CONFIG_FILE_PATH "/defaults/default.json"
 #define CONFIG_FILE_PATH "/config/config.json"
 #define FORCE_FILE_PATH "/config/forced.json"

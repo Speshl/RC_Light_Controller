@@ -175,8 +175,8 @@ void ApplyInputToState(State* state, InputValues input){
 
   state->inputState.leftTurn = input.steer < INPUT_MID - TURN_THRESHOLD;
   state->inputState.rightTurn = input.steer > INPUT_MID + TURN_THRESHOLD;
-  state->inputState.brakes = input.esc < INPUT_MID - INPUT_THRESHOLD;
   state->inputState.reverse = checkReverse(input.esc);
+  state->inputState.brakes = (input.esc < INPUT_MID - INPUT_THRESHOLD) && !state->inputState.reverse;
 
   //PrintState(state);
 
