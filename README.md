@@ -1,5 +1,16 @@
-# About the Project
-  This software when paired with an ESP32 and custom board (here) allows the control of up to 11 (8+3) channels of lights intended for an RC car.  That is 8 channels of role based (turn signals, brake light, etc...) and 3 channels of led strip with selectable animations (Exhaust backfire, police light, etc...).  This controller is to be directly connected to the RC receiver through either a ERLS or SBUS connection. This allows the RC Light Controller (RCLC) to access steering, esc, and aux channel information to animate the lights accordingly.
+# RC Light Controller (RCLC)
+
+This software, when paired with an ESP32 and a custom board, allows the control of up to 11 (8+3) channels of lights intended for an RC car. It supports 8 channels of role-based lights (turn signals, brake light, etc.) and 3 channels of LED strips with selectable animations (exhaust backfire, police light, etc.). The controller connects directly to the RC receiver through either an ERLS or SBUS connection, allowing the RCLC to access steering, ESC, and aux channel information to animate the lights accordingly.
+
+## Table of Contents
+
+- [Supported Features](#supported-features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Flashing ESP32 with RCLC Firmware](#flashing-esp32-with-rclc-firmware)
+- [Web Configuration](#web-configuration)
+- [License](#license)
 
 ## Supported Features
  - Support of On/Off toggle on specified channel
@@ -14,7 +25,7 @@
    - Head Light
    - Reverse Light
    - Hazard Light
-   - Running Light
+   - Running Light (on with headlights, but half power)
    - Aux1 Light
    - Aux2 Light
    - Strobe1 Light
