@@ -6,8 +6,6 @@ This software, when paired with an ESP32 and a custom board, allows the control 
 
 - [Supported Features](#supported-features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
 - [Flashing ESP32 with RCLC Firmware](#flashing-esp32-with-rclc-firmware)
 - [Web Configuration](#web-configuration)
 - [License](#license)
@@ -43,7 +41,7 @@ This software, when paired with an ESP32 and a custom board, allows the control 
   - Police Wrap
    
 
-### Flashing ESP32 with RCLC firmware
+### Installation
  TODO
 
 ### Web Configuration
