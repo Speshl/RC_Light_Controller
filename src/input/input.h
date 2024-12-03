@@ -2,6 +2,7 @@
 #define INPUT_H
 #include "../config/config.h"
 #include <CrsfSerial.h>
+#include "sbus.h"
 
 void SetupInput(Config* config);
 

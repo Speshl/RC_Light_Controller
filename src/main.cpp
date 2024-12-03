@@ -9,6 +9,9 @@
 State state;
 
 bool lightsPaused = false;
+bool recentlyNegative = false;
+bool lastZero = false;
+bool inReverse = false;
 
 void setup();
 void loop();
@@ -71,6 +74,29 @@ void loop() {
 
   //check for new wifi input
   ProcessWifi();// this will cause device to reset if config is updated
+}
+
+bool checkReverse(int escValue){
+  if(inReverse && escValue > INPUT_MID){ // if in reverse and start going forward (deadzone has already been applied to esvValue)
+    inReverse = false;
+  }
+
+  if(!inReverse){ // if not in reverse, maybe we should be?
+    if (escValue > INPUT_MID){ // nope, going forward
+      recentlyNegative = false;
+      lastZero = false;
+    }else if (escValue < INPUT_MID){ // maybe, but could just be breaks
+      if (recentlyNegative && lastZero){ //really was reverse
+        inReverse = true;
+        return inReverse;
+      }
+      recentlyNegative = true;
+      lastZero = false;
+    }else{ // just idle
+      lastZero = true;
+    }
+  }
+  return inReverse;
 }
 
 bool UpdatePauseState(bool currentPauseState){
@@ -149,7 +175,8 @@ void ApplyInputToState(State* state, InputValues input){
 
   state->inputState.leftTurn = input.steer < INPUT_MID - TURN_THRESHOLD;
   state->inputState.rightTurn = input.steer > INPUT_MID + TURN_THRESHOLD;
-  state->inputState.brakes = input.esc < INPUT_MID - INPUT_THRESHOLD;
+  state->inputState.reverse = checkReverse(input.esc);
+  state->inputState.brakes = (input.esc < INPUT_MID - INPUT_THRESHOLD) && !state->inputState.reverse;
 
   //PrintState(state);
 
@@ -170,6 +197,8 @@ void PrintState(State* state){
   Serial.println(state->inputState.hazards);
   Serial.print("Brakes: ");
   Serial.println(state->inputState.brakes);
+  Serial.print("Reverse: ");
+  Serial.println(state->inputState.reverse);
   return;
 }
 

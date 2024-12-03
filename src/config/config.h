@@ -6,11 +6,13 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h> // ArduinoJson library
 
+#define ENABLE_FORCE_CONFIG true
 #define DEFAULT_CONFIG_FILE_PATH "/defaults/default.json"
 #define CONFIG_FILE_PATH "/config/config.json"
+#define FORCE_FILE_PATH "/config/forced.json"
 
 #define ENABLE_DEMO_MODE true
-#define TIME_TIL_DEMO 5000
+#define TIME_TIL_DEMO 15000
 
 //led strip configs
 #define COLOR_ORDER RGB
@@ -18,6 +20,12 @@
 #define VOLTS 5
 #define MAX_AMPS 500 //value in milliamps
 #define BRIGHTNESS 100
+
+//INPUT CONFIG
+#define SERIAL2_RX 16
+#define SERIAL2_TX 17
+#define ENABLE_FAST_SBUS false
+
 
 //OUTPUT CONFIG
 #define MAX_CHANNELS 12
@@ -34,7 +42,7 @@
 #define OUTPUT_PIN_10 5
 #define OUTPUT_PIN_11 18
 #define OUTPUT_PIN_12 19
-const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};//TODO Confirm Pins
+const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};
 
 #define NUM_STRIP_LEDS 100
 
@@ -56,6 +64,13 @@ const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};//TODO Co
 #define CRSF_MID 1500
 #define CRSF_HIGH 2011
 #define CRSF_DEADZONE 20
+
+//SBUS CONFIG
+#define SBUS_LOW 172
+#define SBUS_MID 992
+#define SBUS_HIGH 1811
+#define SBUS_DEADZONE 20
+#define NO_SIGNAL_TIMES_TIL_MID 10
 
 #define TIME_TIL_FLASH 5000
 #define TURN_FLASH_INTERVAL 500
@@ -174,6 +189,7 @@ struct InputState {
   bool rightTurn;
   bool hazards;
   bool brakes;
+  bool reverse;
 };
 
 enum FlameType {

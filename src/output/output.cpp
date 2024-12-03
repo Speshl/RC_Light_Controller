@@ -108,11 +108,10 @@ void showSingleLED(State* state, int channel){
         return;
     }
 
-    //Not supported yet if ever
-    // if(channelCfg.roles.reverse && levelCfg.roles.reverse){
-    //     analogWrite(channelCfg.pin, 255);
-    //     return;
-    // }
+    if(channelCfg.roles.reverse && levelCfg.roles.reverse && state->inputState.reverse){
+        analogWrite(channelCfg.pin, 255);
+        return;
+    }
     
     if(channelCfg.roles.running && levelCfg.roles.running){
         analogWrite(channelCfg.pin, 100); // low power for running lights
@@ -437,7 +436,6 @@ void SetupOutput(Config cfg){
 
 void ShowState(State* state){
     for (int i = 0; i < MAX_CHANNELS; i++) {
-
         if(!state->inputState.enabled){
             switch(state->config.outputConfig.channelConfigs[i].type){
                 case SINGLE_LED:
