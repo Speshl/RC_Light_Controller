@@ -21,6 +21,12 @@
 #define MAX_AMPS 500 //value in milliamps
 #define BRIGHTNESS 100
 
+//INPUT CONFIG
+#define SERIAL2_RX 16
+#define SERIAL2_TX 17
+#define ENABLE_FAST_SBUS false
+
+
 //OUTPUT CONFIG
 #define MAX_CHANNELS 12
 
@@ -36,7 +42,7 @@
 #define OUTPUT_PIN_10 5
 #define OUTPUT_PIN_11 18
 #define OUTPUT_PIN_12 19
-const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};//TODO Confirm Pins
+const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};
 
 #define NUM_STRIP_LEDS 100
 
@@ -58,6 +64,13 @@ const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};//TODO Co
 #define CRSF_MID 1500
 #define CRSF_HIGH 2011
 #define CRSF_DEADZONE 20
+
+//SBUS CONFIG
+#define SBUS_LOW 172
+#define SBUS_MID 992
+#define SBUS_HIGH 1811
+#define SBUS_DEADZONE 20
+#define NO_SIGNAL_TIMES_TIL_MID 10
 
 #define TIME_TIL_FLASH 5000
 #define TURN_FLASH_INTERVAL 500

@@ -1,6 +1,6 @@
 {
     "input_config": {
-        "signal_type": "CRSF",
+        "signal_type": "SBUS",
         "steer_channel": 1,
         "invert_steer": "off",
         "esc_channel": 2,

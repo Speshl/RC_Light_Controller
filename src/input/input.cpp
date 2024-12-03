@@ -1,4 +1,5 @@
 #include "input.h"
+#include "sbus.h"
 
 // Pass any HardwareSerial port
 // "Arduino" users (atmega328) can not use CRSF_BAUDRATE, as the atmega does not support it
@@ -6,8 +7,12 @@
 // Also note the atmega only has one Serial, so logging to Serial must be removed
 CrsfSerial crsf(Serial2, CRSF_BAUDRATE); //Arduino IOT use Serial1, ESP32 use Serial2, Serial is debug console
 
+bfs::SbusRx sbus_rx(&Serial2, SERIAL2_RX, SERIAL2_TX, true, ENABLE_FAST_SBUS);
+
 InputValues latestInput;
 InputConfig inputConfig;
+
+int sbusTimesWithoutUpdate = 0;
 
 //Private functions
 
@@ -19,8 +24,15 @@ int getCRSFValueWithDeadzone(int value){
     }
 }
 
+int getSBUSValueWithDeadzone(int value){
+    if(value < SBUS_MID - SBUS_DEADZONE || value > SBUS_MID + SBUS_DEADZONE){
+        return map(value, SBUS_LOW, SBUS_HIGH, INPUT_LOW, INPUT_HIGH);
+    }else{
+        return INPUT_MID;
+    }
+}
+
 void handleCRSFUpdate(){
-    //Serial.println("Got CRSF Update");
     int steer = crsf.getChannel(inputConfig.steerChannel);
     int esc = crsf.getChannel(inputConfig.escChannel);
     int level = crsf.getChannel(inputConfig.levelChannel);
@@ -32,7 +44,36 @@ void handleCRSFUpdate(){
     latestInput.enabled = getCRSFValueWithDeadzone(enabled);
 
     latestInput.lastUpdate = millis();
-    //PrintInput(latestInput);
+}
+
+void handleSBUSUpdate() {
+    int steer = SBUS_MID;
+    int esc = SBUS_MID;
+    int level = SBUS_MID;
+    int enabled = SBUS_MID;
+    sbusTimesWithoutUpdate++;
+    if(sbus_rx.Read()){
+        sbusTimesWithoutUpdate = 0;
+        bfs::SbusData data = sbus_rx.data();
+        steer = data.ch[inputConfig.steerChannel - 1];
+        esc = data.ch[inputConfig.escChannel - 1];
+        level = data.ch[inputConfig.levelChannel - 1];
+        enabled = data.ch[inputConfig.enableChannel - 1];
+
+        latestInput.steer = getSBUSValueWithDeadzone(steer);
+        latestInput.esc = getSBUSValueWithDeadzone(esc);
+        latestInput.level = getSBUSValueWithDeadzone(level);
+        latestInput.enabled = getSBUSValueWithDeadzone(enabled);
+        latestInput.lastUpdate = millis(); // Maybe doesn't need update when we don't get input
+    }
+
+    if(sbusTimesWithoutUpdate > NO_SIGNAL_TIMES_TIL_MID){
+        sbusTimesWithoutUpdate = NO_SIGNAL_TIMES_TIL_MID + 1;
+        latestInput.steer = INPUT_MID;
+        latestInput.esc = INPUT_MID;
+        latestInput.level = INPUT_MID;
+        latestInput.enabled = INPUT_MID;
+    }
 }
 
 //Public functions
@@ -40,8 +81,8 @@ void SetupInput(Config* config){
     inputConfig = config->inputConfig;
     switch(config->inputConfig.type){
         case SBUS:
-            Serial.println("Setting up SBUS (but not implemented yet)");
-            //TODO: Implement SBUS
+            Serial.println("Setting up SBUS");
+            sbus_rx.Begin();
             break;
         case CRSF:
         default:
@@ -55,6 +96,7 @@ void SetupInput(Config* config){
 InputValues GetLatestInput(){
     switch(inputConfig.type){
         case SBUS:
+            handleSBUSUpdate();
             break;
         case CRSF:
         default:
