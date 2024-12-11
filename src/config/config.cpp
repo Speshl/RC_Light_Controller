@@ -7,20 +7,9 @@ Config GetBaseConfig(){
 
   cfg.sysConfig.forcedShutdown = false;
   
-  // Passenger side headlight (input side, furthest from usb port)
-  cfg.outputConfig.channelConfigs[0].pin = pinNums[0];
-  cfg.outputConfig.channelConfigs[1].pin = pinNums[1];
-  cfg.outputConfig.channelConfigs[2].pin = pinNums[2];
-  cfg.outputConfig.channelConfigs[3].pin = pinNums[3];
-  cfg.outputConfig.channelConfigs[4].pin = pinNums[4];
-  cfg.outputConfig.channelConfigs[5].pin = pinNums[5];
-  cfg.outputConfig.channelConfigs[6].pin = pinNums[6];
-  cfg.outputConfig.channelConfigs[7].pin = pinNums[7];
-  cfg.outputConfig.channelConfigs[8].pin = pinNums[8];
-  cfg.outputConfig.channelConfigs[9].pin = pinNums[9];
-  cfg.outputConfig.channelConfigs[10].pin = pinNums[10];
-  cfg.outputConfig.channelConfigs[11].pin = pinNums[11];
-
+  for(int i=0; i<MAX_CHANNELS; i++){
+    cfg.outputConfig.channelConfigs[i].pin = pinNums[i];
+  }
   return cfg;
 }
 

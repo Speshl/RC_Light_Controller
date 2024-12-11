@@ -26,9 +26,9 @@
 #define SERIAL2_TX 17
 #define ENABLE_FAST_SBUS false
 
-
-//OUTPUT CONFIG
-#define MAX_CHANNELS 12
+//Pinout order for stacked narrow version: 32,33,25,26,27,14,12,13,4,5,18,19
+//Pinout order for 16c version: 32,33,25,26,27,14,12,13,4,5,18,19,23,22,21,2
+#define MAX_CHANNELS 16
 
 #define OUTPUT_PIN_1 32
 #define OUTPUT_PIN_2 33
@@ -38,11 +38,34 @@
 #define OUTPUT_PIN_6 14
 #define OUTPUT_PIN_7 12
 #define OUTPUT_PIN_8 13
-#define OUTPUT_PIN_9 4
-#define OUTPUT_PIN_10 5
-#define OUTPUT_PIN_11 18
+
+#define OUTPUT_PIN_9 23
+#define OUTPUT_PIN_10 22
+#define OUTPUT_PIN_11 21
 #define OUTPUT_PIN_12 19
-const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};
+#define OUTPUT_PIN_13 18
+#define OUTPUT_PIN_14 5
+#define OUTPUT_PIN_15 4
+#define OUTPUT_PIN_16 2
+
+const byte pinNums[MAX_CHANNELS] = {
+  OUTPUT_PIN_1,
+  OUTPUT_PIN_2,
+  OUTPUT_PIN_3,
+  OUTPUT_PIN_4,
+  OUTPUT_PIN_5,
+  OUTPUT_PIN_6,
+  OUTPUT_PIN_7,
+  OUTPUT_PIN_8,
+  OUTPUT_PIN_9,
+  OUTPUT_PIN_10,
+  OUTPUT_PIN_11,
+  OUTPUT_PIN_12,
+  OUTPUT_PIN_13,
+  OUTPUT_PIN_14,
+  OUTPUT_PIN_15,
+  OUTPUT_PIN_16
+  }; //32,33,25,26,27,14,12,13,4,5,18,19
 
 #define NUM_STRIP_LEDS 100
 

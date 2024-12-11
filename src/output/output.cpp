@@ -420,6 +420,14 @@ void SetupOutput(Config cfg){
                 FastLED.addLeds<CHIPSET, OUTPUT_PIN_11, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
             }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_12){
                 FastLED.addLeds<CHIPSET, OUTPUT_PIN_12, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_13){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_13, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_14){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_14, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_15){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_15, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_16){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_16, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
             }else{
                 Serial.print("Invalid pin for LED strip: ");
                 Serial.println(cfg.outputConfig.channelConfigs[i].pin);

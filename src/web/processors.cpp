@@ -82,7 +82,7 @@ void buildLevelMaps(Config* webConfig){
 }
 
 void buildOutputMaps(Config* webConfig){
-  for(int i=0;i<12;i++){
+  for(int i=0;i<MAX_CHANNELS;i++){
     outputsMap[i]["OUT_NAME"] = "Output " + String(i+1);
     outputsMap[i]["OUT_NUM"] = "out_"+String(i+1)+"_tab";
     outputsMap[i]["OUT_IDX"] = String(i+1);
