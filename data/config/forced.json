@@ -26,8 +26,7 @@
             "level_underglow": "off",
             "level_throttle_light": "off",
             "level_exhaust": "on",
-            "level_police": "off",
-            "level_caution": "off"
+            "level_emergency": "off"
         },
         {
             "level_num": "2",
@@ -46,8 +45,7 @@
             "level_underglow": "off",
             "level_throttle_light": "off",
             "level_exhaust": "on",
-            "level_police": "off",
-            "level_caution": "off"
+            "level_emergency": "off"
         },
         {
             "level_num": "3",
@@ -66,8 +64,7 @@
             "level_underglow": "on",
             "level_throttle_light": "on",
             "level_exhaust": "on",
-            "level_police": "on",
-            "level_caution": "on"
+            "level_emergency": "on"
         }
     ],
     "out_configs": [

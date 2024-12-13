@@ -325,18 +325,18 @@ void showExhaustFlame(State* state, int channel){
     }
 }
 
-void showPoliceLightsSolid(State* state, int channel){
+void showEmergencyLightsSolid(State* state, int channel){
     OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
     LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
 
-    if(!state->inputState.enabled || !levelCfg.animations.policeLights){
+    if(!state->inputState.enabled || !levelCfg.animations.emergencyLights){
         clearStrip(channel);
         return;
     }
 
-    CRGB color = CRGB::Red;
-    if(state->animationState.police.solidAlternateColor){
-        color = CRGB::Blue;
+    CRGB color = reorderColor(channelCfg.color, channelCfg.colorOrder);
+    if(state->animationState.emergency.solidAlternateColor){
+        color = CRGB::Black;
     }
 
     for(int i=0;i<NUM_STRIP_LEDS;i++){
@@ -344,47 +344,32 @@ void showPoliceLightsSolid(State* state, int channel){
     }
 }
 
-void showPoliceLightsWrap(State* state, int channel){ //Split
+void showEmergencyLightsWrap(State* state, int channel){ //Split
     OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
     LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
 
-    if(!state->inputState.enabled || !levelCfg.animations.policeLights){
+    if(!state->inputState.enabled || !levelCfg.animations.emergencyLights){
         clearStrip(channel);
         return;
     }
 
     for(int i=0;i<channelCfg.stripLedCount;i++){
-        CRGB color = CRGB::Blue;
-        CRGB dimColor = CRGB::Black;
-        if(i > channelCfg.stripLedCount/2){
-            color = CRGB::Blue;
-            dimColor = CRGB::Black;
-        }
-
-        if((state->animationState.police.strobePos == 0 || state->animationState.police.strobePos == 2)){
+        if((state->animationState.emergency.strobePos == 0 || state->animationState.emergency.strobePos == 2)){
             if(i < channelCfg.stripLedCount/2){
                 led_strips[channel][i] = CRGB::Black;
             }else{
-                led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
+                led_strips[channel][i] = reorderColor(channelCfg.color, channelCfg.colorOrder);
             }
-        }else if((state->animationState.police.strobePos == 3 || state->animationState.police.strobePos == 5)){
+        }else if((state->animationState.emergency.strobePos == 3 || state->animationState.emergency.strobePos == 5)){
             if(i >= channelCfg.stripLedCount/2){
                 led_strips[channel][i] = CRGB::Black;
             }else{
-                led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
+                led_strips[channel][i] = reorderColor(channelCfg.color, channelCfg.colorOrder);
             }
         }else{
             led_strips[channel][i] = CRGB::Black;
         }
     }
-}
-
-void showCautionLightsSolid(State* state, int channel){
-    
-}
-
-void showCautionLightsWrap(State* state, int channel){
-    
 }
 
 // Public functions
@@ -489,17 +474,11 @@ void ShowState(State* state){
                     case EXHAUST_FLAME:
                         showExhaustFlame(state, i);
                         break;
-                    case POLICE_LIGHTS_SOLID:
-                        showPoliceLightsSolid(state, i);
+                    case EMERGENCY_LIGHTS_SOLID:
+                        showEmergencyLightsSolid(state, i);
                         break;
-                    case POLICE_LIGHTS_WRAP:
-                        showPoliceLightsWrap(state, i);
-                        break;
-                    case CAUTION_LIGHTS_SOLID:
-                        showCautionLightsSolid(state, i);
-                        break;
-                    case CAUTION_LIGHTS_WRAP:
-                        showCautionLightsWrap(state, i);
+                    case EMERGENCY_LIGHTS_WRAP:
+                        showEmergencyLightsWrap(state, i);
                         break;
                     default:
                         //Serial.println("Invalid strip animation");

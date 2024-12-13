@@ -97,8 +97,7 @@ void parseInputConfig(Config *cfg, JsonVariant doc){
   "level_underglow": "on",
   "level_throttle_light": "on",
   "level_exhaust": "on",
-  "level_police": "on",
-  "level_caution": "on"
+  "level_emergency": "on",
 }
 */
 void parseLevelConfig(Config *cfg, JsonVariant doc){
@@ -124,8 +123,7 @@ void parseLevelConfig(Config *cfg, JsonVariant doc){
     cfg->levelConfigs[i].animations.underglow = GetBoolFromString(doc["level_underglow"]);
     cfg->levelConfigs[i].animations.throttleBrakeLight = GetBoolFromString(doc["level_throttle_light"]);
     cfg->levelConfigs[i].animations.exhaustFlame = GetBoolFromString(doc["level_exhaust"]);
-    cfg->levelConfigs[i].animations.policeLights = GetBoolFromString(doc["level_police"]);
-    cfg->levelConfigs[i].animations.cautionLights = GetBoolFromString(doc["level_caution"]);
+    cfg->levelConfigs[i].animations.emergencyLights = GetBoolFromString(doc["level_emergency"]);
 
     return;
 }
@@ -177,7 +175,7 @@ void parseOutConfig(Config *cfg, JsonVariant doc){
     cfg->outputConfig.channelConfigs[i].roles.strobe1 = GetBoolFromString(doc["out_role_strobe1"]);
     cfg->outputConfig.channelConfigs[i].roles.strobe2 = GetBoolFromString(doc["out_role_strobe2"]);
     cfg->outputConfig.channelConfigs[i].colorOrder = doc["out_order"] == "RGB" ? RGB : doc["out_order"] == "GRB" ? GRB : doc["out_order"] == "BRG" ? BRG : doc["out_order"] == "RBG" ? RBG : doc["out_order"] == "BGR" ? BGR : GBR;
-    cfg->outputConfig.channelConfigs[i].stripAnimation = doc["out_animation"] == "1" ? UNDERGLOW_SOLID : doc["out_animation"] == "2" ? UNDERGLOW_BREATHE : doc["out_animation"] == "3" ? UNDERGLOW_CYCLE : doc["out_animation"] == "4" ? THROTTLE_BRAKE_LIGHT_BOTTOM : doc["out_animation"] == "5" ? THROTTLE_BRAKE_LIGHT_TOP : doc["out_animation"] == "6" ? THROTTLE_BRAKE_LIGHT_MIDDLE : doc["out_animation"] == "7" ? EXHAUST_FLAME : doc["out_animation"] == "8" ? POLICE_LIGHTS_SOLID : doc["out_animation"] == "9" ? POLICE_LIGHTS_WRAP : doc["out_animation"] == "10" ? CAUTION_LIGHTS_SOLID : CAUTION_LIGHTS_WRAP;
+    cfg->outputConfig.channelConfigs[i].stripAnimation = doc["out_animation"] == "1" ? UNDERGLOW_SOLID : doc["out_animation"] == "2" ? UNDERGLOW_BREATHE : doc["out_animation"] == "3" ? UNDERGLOW_CYCLE : doc["out_animation"] == "4" ? THROTTLE_BRAKE_LIGHT_BOTTOM : doc["out_animation"] == "5" ? THROTTLE_BRAKE_LIGHT_TOP : doc["out_animation"] == "6" ? THROTTLE_BRAKE_LIGHT_MIDDLE : doc["out_animation"] == "7" ? EXHAUST_FLAME : doc["out_animation"] == "8" ? EMERGENCY_LIGHTS_SOLID : EMERGENCY_LIGHTS_WRAP;
     cfg->outputConfig.channelConfigs[i].color = GetColorFromHexString(doc["out_color"]);
 
     int numLeds = doc["out_num_leds"];

@@ -195,9 +195,7 @@ void PrintConfig(Config cfg){
     Serial.println(cfg.levelConfigs[i].animations.underglow);
     Serial.print(" Throttle Brake Light: ");
     Serial.println(cfg.levelConfigs[i].animations.throttleBrakeLight);
-    Serial.print(" Police Lights: ");
-    Serial.println(cfg.levelConfigs[i].animations.policeLights);
-    Serial.print(" Caution Lights: ");
-    Serial.println(cfg.levelConfigs[i].animations.cautionLights);
+    Serial.print(" Emergency Lights: ");
+    Serial.println(cfg.levelConfigs[i].animations.emergencyLights);
   }
 }

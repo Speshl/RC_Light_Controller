@@ -63,8 +63,7 @@ JsonDocument LevelConfigToJson(Config *cfg, int levelNum){
   levelCfg["level_underglow"] = cfg->levelConfigs[levelNum].animations.underglow ? "on" : "off";
   levelCfg["level_throttle_light"] = cfg->levelConfigs[levelNum].animations.throttleBrakeLight ? "on" : "off";
   levelCfg["level_exhaust"] = cfg->levelConfigs[levelNum].animations.exhaustFlame ? "on" : "off";
-  levelCfg["level_police"] = cfg->levelConfigs[levelNum].animations.policeLights ? "on" : "off";
-  levelCfg["level_caution"] = cfg->levelConfigs[levelNum].animations.cautionLights ? "on" : "off";
+  levelCfg["level_emergency"] = cfg->levelConfigs[levelNum].animations.emergencyLights ? "on" : "off";
 
   return levelCfg;
 }

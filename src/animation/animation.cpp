@@ -226,22 +226,22 @@ void calculateExhaustFlameAnimation(State* state) {
     return;
 }
 
-void calculatePoliceLightAnimation(PoliceState* police){
+void calculateEmergencyLightAnimation(EmergencyState* emergency){
     unsigned long elapsedTime = millis();
     // Alternate the blink on every interval
     if((elapsedTime / TURN_FLASH_INTERVAL) % 2 == 0){
-        police->solidAlternateColor = true;
+        emergency->solidAlternateColor = true;
     } else {
-        police->solidAlternateColor = false;
+        emergency->solidAlternateColor = false;
     }
 
 
-    if(police->lastStrobeChange + STROBE_FLASH_INTERVAL < elapsedTime){
-        police->strobePos ++;
-        if(police->strobePos > 5){
-            police->strobePos = 0;
+    if(emergency->lastStrobeChange + STROBE_FLASH_INTERVAL < elapsedTime){
+        emergency->strobePos ++;
+        if(emergency->strobePos > 5){
+            emergency->strobePos = 0;
         }
-        police->lastStrobeChange = elapsedTime;
+        emergency->lastStrobeChange = elapsedTime;
     }
 
     return;
@@ -251,7 +251,6 @@ void calculateSingleAnimations(State* state) {
     calculateBlinkRoleAnimation(&state->animationState.roleStates.leftTurn, state->inputState.leftTurn);
     calculateBlinkRoleAnimation(&state->animationState.roleStates.rightTurn, state->inputState.rightTurn);
     calculateBlinkRoleAnimation(&state->animationState.roleStates.hazards, state->inputState.hazards);
-
     calculateStrobesAnimation(state);
     return;
 }
@@ -259,7 +258,7 @@ void calculateSingleAnimations(State* state) {
 void calculateStripAnimations(State* state) {
     calculateExhaustFlameAnimation(state);
     calculateUnderglowCycleAnimation(&state->animationState.underglow);
-    calculatePoliceLightAnimation(&state->animationState.police);
+    calculateEmergencyLightAnimation(&state->animationState.emergency);
     return;
 }
 

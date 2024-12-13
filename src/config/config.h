@@ -177,18 +177,15 @@ enum StripAnimation {
   THROTTLE_BRAKE_LIGHT_TOP,
   THROTTLE_BRAKE_LIGHT_MIDDLE,
   EXHAUST_FLAME,
-  POLICE_LIGHTS_SOLID,
-  POLICE_LIGHTS_WRAP,
-  CAUTION_LIGHTS_SOLID,
-  CAUTION_LIGHTS_WRAP,
+  EMERGENCY_LIGHTS_SOLID,
+  EMERGENCY_LIGHTS_WRAP,
 };
 
 struct Animations{
   bool underglow;
   bool throttleBrakeLight;
   bool exhaustFlame;
-  bool policeLights;
-  bool cautionLights;
+  bool emergencyLights;
 };
 
 struct LevelConfig {
@@ -252,10 +249,9 @@ struct UnderglowState {
   int palettePos;
 };
 
-struct PoliceState {
+struct EmergencyState {
   int strobePos;
   unsigned long lastStrobeChange;
-
   bool solidAlternateColor;
 };
 
@@ -265,7 +261,7 @@ struct AnimationState {
 
   FlameState flame;
   UnderglowState underglow;
-  PoliceState police;
+  EmergencyState emergency;
 };
 
 struct OutputChannelConfig {

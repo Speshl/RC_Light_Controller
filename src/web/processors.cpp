@@ -76,8 +76,7 @@ void buildLevelMaps(Config* webConfig){
     levelsMap[i]["LEVEL_UNDERGLOW"] = webConfig->levelConfigs[i].animations.underglow ? "checked" : "";
     levelsMap[i]["LEVEL_THROTTLE_LIGHT"] = webConfig->levelConfigs[i].animations.throttleBrakeLight ? "checked" : "";
     levelsMap[i]["LEVEL_EXHAUST"] = webConfig->levelConfigs[i].animations.exhaustFlame ? "checked" : "";
-    levelsMap[i]["LEVEL_POLICE"] = webConfig->levelConfigs[i].animations.policeLights ? "checked" : "";
-    levelsMap[i]["LEVEL_CAUTION"] = webConfig->levelConfigs[i].animations.cautionLights ? "checked" : "";
+    levelsMap[i]["LEVEL_EMERGENCY"] = webConfig->levelConfigs[i].animations.emergencyLights ? "checked" : "";
   }
 }
 
@@ -110,10 +109,8 @@ void buildOutputMaps(Config* webConfig){
     outputsMap[i]["OUT_THROTTLE_LIGHT_TOP"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == THROTTLE_BRAKE_LIGHT_TOP) ? "selected" : "";
     outputsMap[i]["OUT_THROTTLE_LIGHT_MID"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == THROTTLE_BRAKE_LIGHT_MIDDLE) ? "selected" : "";
     outputsMap[i]["OUT_EXHAUST_FLAME"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == EXHAUST_FLAME) ? "selected" : "";
-    outputsMap[i]["OUT_POLICE_LIGHTS_SOLID"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == POLICE_LIGHTS_SOLID) ? "selected" : "";
-    outputsMap[i]["OUT_POLICE_LIGHTS_WRAP"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == POLICE_LIGHTS_WRAP) ? "selected" : "";
-    outputsMap[i]["OUT_CAUTION_LIGHTS_SOLID"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == CAUTION_LIGHTS_SOLID) ? "selected" : "";
-    outputsMap[i]["OUT_CAUTION_LIGHTS_WRAP"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == CAUTION_LIGHTS_WRAP) ? "selected" : "";
+    outputsMap[i]["OUT_EMERGENCY_LIGHTS_SOLID"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == EMERGENCY_LIGHTS_SOLID) ? "selected" : "";
+    outputsMap[i]["OUT_EMERGENCY_LIGHTS_WRAP"] = (webConfig->outputConfig.channelConfigs[i].stripAnimation == EMERGENCY_LIGHTS_WRAP) ? "selected" : "";
 
     char hexColor[8];
     sprintf(hexColor, "#%02X%02X%02X", webConfig->outputConfig.channelConfigs[i].color.r, webConfig->outputConfig.channelConfigs[i].color.g, webConfig->outputConfig.channelConfigs[i].color.b);
