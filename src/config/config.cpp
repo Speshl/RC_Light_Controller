@@ -38,8 +38,8 @@ void SaveConfig(Config cfg){
 }
 
 void SaveConfigWithRestart(Config cfg){
-  cfg.sysConfig.forcedShutdown = true;
-  SaveConfig(cfg);
+  cfg.sysConfig.forcedShutdown = true; // TODO: Keep track of forcedShutdown
+//  SaveConfig(cfg);
   Serial.println("Restarting to apply new config...");
   ESP.restart();
 }
@@ -55,6 +55,7 @@ Config loadConfigFromFile(const char* filename) {
   JsonDocument doc;
 
   // Deserialize the JSON document
+  // Serial.println("Deserializing config file");
   DeserializationError error = deserializeJson(doc, file);
   if (error) {
     Serial.println("Failed to parse config file");
@@ -156,13 +157,6 @@ void PrintConfig(Config cfg){
     Serial.println(cfg.outputConfig.channelConfigs[i].roles.tail);\
     Serial.print("StripLEDCount: ");
     Serial.println(cfg.outputConfig.channelConfigs[i].stripLedCount);
-    Serial.print("Color: ");
-    Serial.print("R: ");
-    Serial.print(cfg.outputConfig.channelConfigs[i].color.r);
-    Serial.print(", G: ");
-    Serial.print(cfg.outputConfig.channelConfigs[i].color.g);
-    Serial.print(", B: ");
-    Serial.println(cfg.outputConfig.channelConfigs[i].color.b);
   }
 
   Serial.println("Level Config:");

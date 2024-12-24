@@ -1,0 +1,109 @@
+<div>
+    <form id="configForm" action="/level" method="post" onsubmit="return confirmSubmit()">
+        <div id="%LEVEL_NUM%">
+            <input type="hidden" name="level_num" value="%LEVEL_IDX%">
+            <label for="level_name" style="cursor:pointer;" title="Name of the level">%LEVEL_NAME%</label>
+            <div class="leveltabcontent displayblock">
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_leftTurn" id="level_leftTurn" %LEVEL_LEFTTURN% class="levelcheckbox">
+                    <label for="level_leftTurn" style="cursor:pointer;" title=" will be active on level">
+                        Left Turn
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_rightTurn" id="level_rightTurn" %LEVEL_RIGHTTURN% class="levelcheckbox">
+                    <label for="level_rightTurn" style="cursor:pointer;" title="rightTurn will be active on level">
+                        Right Turn
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_brake" id="level_brake" %LEVEL_BRAKE% class="levelcheckbox">
+                    <label for="level_brake" style="cursor:pointer;" title="brake will be active on level">
+                        Brake Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_tail" id="level_tail" %LEVEL_TAIL% class="levelcheckbox">
+                    <label for="level_tail" style="cursor:pointer;" title="tail will be active on level">
+                        Tail Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_head" id="level_head" %LEVEL_HEAD% class="levelcheckbox">
+                    <label for="level_head" style="cursor:pointer;" title="head will be active on level">
+                        Head Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_reverse" id="level_reverse" %LEVEL_REVERSE% class="levelcheckbox">
+                    <label for="level_reverse" style="cursor:pointer;" title="reverse will be active on level">
+                        Reverse Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_hazard" id="level_hazard" %LEVEL_HAZARD% class="levelcheckbox">
+                    <label for="level_hazard" style="cursor:pointer;" title="hazard will be active on level">
+                        Hazard Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_running" id="level_running" %LEVEL_RUNNING% class="levelcheckbox">
+                    <label for="level_running" style="cursor:pointer;" title="running will be active on level">
+                        Running Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_aux1" id="level_aux1" %LEVEL_AUX1% class="levelcheckbox">
+                    <label for="level_aux1" style="cursor:pointer;" title="aux1 will be active on level">
+                        Aux1 Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_aux2" id="level_aux2" %LEVEL_AUX2% class="levelcheckbox">
+                    <label for="level_aux2" style="cursor:pointer;" title="aux2 will be active on level">
+                        Aux2 Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_strobe1" id="level_strobe1" %LEVEL_STROBE1% class="levelcheckbox">
+                    <label for="level_strobe1" style="cursor:pointer;" title="strobe1 will be active on level">
+                        Strobe1 Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_strobe2" id="level_strobe2" %LEVEL_STROBE2% class="levelcheckbox">
+                    <label for="level_strobe2" style="cursor:pointer;" title="strobe2 will be active on level">
+                        Strobe2 Lights
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_underglow" id="level_underglow" %LEVEL_UNDERGLOW% class="levelcheckbox">
+                    <label for="level_underglow" style="cursor:pointer;" title="underglow will be active on level">
+                        Underglow
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_throttle_light" id="level_throttle_light" %LEVEL_THROTTLE_LIGHT% class="levelcheckbox">
+                    <label for="level_throttle_light" style="cursor:pointer;" title="throttle light will be active on level">
+                        Throttle/Brake light
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_exhaust" id="level_exhaust" %LEVEL_EXHAUST% class="levelcheckbox">
+                    <label for="level_exhaust" style="cursor:pointer;" title="exhaust will be active on level">
+                        Exhaust Flame
+                    </label>
+                </div>
+                <div class="row levelcontainer">
+                    <input type="checkbox" name="level_emergency" id="level_emergency" %LEVEL_EMERGENCY% class="levelcheckbox">
+                    <label for="level_emergency" style="cursor:pointer;" title="emergency lights similar to police lights">
+                        Emergency Lights
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="applybutton">
+            <input type="button" value="Apply" onclick="submitFormAsJson()">
+        </div>
+    </form>
+</div>

@@ -1,0 +1,21 @@
+<div>
+    <form id="configForm" action="/output" method="post" onsubmit="return confirmSubmit()">
+        <input type="hidden" name="out_num" value="%OUT_IDX%">
+        <label for="out_name" style="cursor:pointer;" title="Name of the output">%OUT_NAME%</label>
+        <div id="%OUT_NUM%" class="outtabcontent displayblock">
+            <div class="row outputcontainer">
+                <label for="out_type" style="cursor:pointer;" title="Output Type" class="justifyend">
+                    Type:
+                </label>
+                <select name="out_type" id="out_type" hx-get="%OUT_TYPE_FIELDS%" hx-target="#typedOutput" hx-trigger="change" class="typeselect">
+                    <option value=single %OUT_TYPE_SINGLE%>Single LED</option>
+                    <option value=strip %OUT_TYPE_STRIP%>LED Strip</option>
+                </select>
+            </div>
+            <div id="typedOutput"></div>
+        </div>
+        <div class="applybutton">
+            <input type="button" value="Apply" onclick="submitFormAsJson()">
+        </div>
+    </form>
+</div>

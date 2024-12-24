@@ -18,5 +18,5 @@
         <button type="button" id="output16TabButton" class="outtablinks" hx-get="output16.htm" hx-trigger="click" hx-target="#outputContent" hx-swap="innerHTML">CH16</button>
     </div>
 
-    <div id="outputContent" hx-on="htmx:afterSettle: showHideFieldSets()"></div>
+    <div id="outputContent" hx-on="htmx:afterSettle: loadDefaultFields()"></div>
 </div>

@@ -1,0 +1,41 @@
+<div id="animation_fields">
+    <div class="outputcontainer">
+        <label for="ug_type" style="cursor:pointer;" title="underglow type" class="fieldlabel">
+            Type:
+        </label>
+        <select name="ug_type" id="ug_type" class="outputfield">
+            <option value="solid" %UNDERGLOW_SOLID%>Solid</option>
+            <option value="breathe" %UNDERGLOW_BREATH%>Breathe</option>
+            <option value="palette" %UNDERGLOW_PALETTE%>Palette</option>
+        </select>
+    </div>
+
+    <div class="outputcontainer">
+        <label for="primary_color" style="cursor:pointer;" title="primary color of underglow" class="fieldlabel">
+            Primary Color:
+        </label>
+        <input type="color" id="primary_color" name="primary_color" value="%PRIMARY_COLOR%" class="outputfield">
+    </div>
+
+    <div class="outputcontainer">
+        <label for="secondary_color" style="cursor:pointer;" title="secondary color of underglow" class="fieldlabel">
+            Secondary Color:
+        </label>
+        <input type="color" id="secondary_color" name="secondary_color" value="%SECONDARY_COLOR%" class="outputfield">
+    </div>
+
+    <div class="outputcontainer">
+        <label for="ug_palette" style="cursor:pointer;" title="Choose a color palette for the underglow" class="fieldlabel">
+            Underglow Palette:
+        </label>
+        <select id="ug_palette" name="ug_palette" class="outputfield">
+            <option value="rainbow" %UNDERGLOW_PALETTE_RAINBOW%>Rainbow</option>
+            <option value="cloud" %UNDERGLOW_PALETTE_CLOUD%>Cloud</option>
+            <option value="lava" %UNDERGLOW_PALETTE_LAVA%>Lava</option>
+            <option value="ocean" %UNDERGLOW_PALETTE_OCEAN%>Ocean</option>
+            <option value="forest" %UNDERGLOW_PALETTE_FOREST%>Forest</option>
+            <option value="party" %UNDERGLOW_PALETTE_PARTY%>Party</option>
+            <option value="heat" %UNDERGLOW_PALETTE_HEAT%>Heat</option>
+        </select>
+    </div>
+</div>
