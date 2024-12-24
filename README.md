@@ -46,8 +46,8 @@ This software, when paired with an ESP32 and a custom board, allows the control 
 
 ### Web Configuration
   1.  Power on the RCLC after flashing firmware.
-  2.  On your pc (or any device with a browser), connect to the "light-control-config" wifi network which should be visible within a few seconds of powering on.
-  3.  In your browser navigate to "192.168.1.1", and you should see the web interface.
+  2.  On your pc (or any device with a browser), connect to the "RCLC-Config" wifi network which should be visible within a few seconds of powering on.
+  3.  In your browser navigate to "192.168.4.20", and you should see the web interface.
   
 ### Force JSON Configuration
  In the platformio.ini file in the root of the repository, you can modify the "ForceConfig" command line variable to be "true".  This will force the controller to always load forced config file located at /data/config/forced.json.  The json values here can be manually adjusted quickly but you risk setting values outside of supported ranges.
