@@ -1,6 +1,6 @@
 # RC Light Controller (RCLC)
 
-This software, when paired with an ESP32 and a custom board, allows the control of up to 11 (8+3) channels of lights intended for an RC car. It supports 8 channels of role-based lights (turn signals, brake light, etc.) and 3 channels of LED strips with selectable animations (exhaust backfire, police light, etc.). The controller connects directly to the RC receiver through either an ERLS or SBUS connection, allowing the RCLC to access steering, ESC, and aux channel information to animate the lights accordingly.
+This software, when paired with an ESP32 and a custom board, allows the control of up to 16 channels of lights intended for an RC car. All 16 channels can either be role-based lights (turn signals, brake light, etc.) or LED strips with selectable animations (exhaust backfire, police light, etc.). The controller connects directly to the RC receiver through either an ELRS or SBUS connection, allowing the RCLC to access steering, ESC, and aux channel information to animate the lights accordingly.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ This software, when paired with an ESP32 and a custom board, allows the control 
  - Supports 3 configurable light levels (some possibilities below)
    - Day lights | Low Beams | High Beams
    - Day lights | Night Lights | Party Lights
- - 8 light channels support any combination of 12 roles
+ - 16 light channels support any combination of 12 roles
    - Left Turn
    - Right Turn
    - Brake Light
@@ -29,7 +29,7 @@ This software, when paired with an ESP32 and a custom board, allows the control 
    - Strobe1 Light
    - Strobe2 Light
      
-- 3 LED strip animation channels (4 with additional soldering)
+- 16 LED strip animation channels
   - Solid Underglow
   - Breathing Underglow
   - Cycling Underglow
