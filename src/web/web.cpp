@@ -38,41 +38,53 @@ void SetupWifi(Config cfg){
   }
 
   WiFi.softAPConfig(LOCAL_IP, GATEWAY, SUBNET);
-  WiFi.softAP("light-control-config");
+  WiFi.softAP("RCLC-Config");
   WiFi.onEvent(WiFiEvent);
 
-  dnsServer.start(53, "lightconfig", WiFi.softAPIP());
+  dnsServer.start(53, "rclcconfig", WiFi.softAPIP());
 
   buildMaps(&webConfig);
 
   server.on("/script.js", HTTP_GET, [](AsyncWebServerRequest *request){
     //Serial.println("sending JS");
     clientDetected = true;
-    request->send(SPIFFS, "/web/web_cfg.js", "text/javascript");
+    request->send(SPIFFS, "/web/shared/web_cfg.js", "text/javascript");
   });
 
   server.on("/styles.css", HTTP_GET, [](AsyncWebServerRequest *request){
     //Serial.println("sending CSS");
     clientDetected = true;
-    request->send(SPIFFS, "/web/web_cfg.css", "text/css");
+    request->send(SPIFFS, "/web/shared/web_cfg.css", "text/css");
   });
 
   server.on("/htmx.js", HTTP_GET, [](AsyncWebServerRequest *request){
     //Serial.println("sending htmx.js");
     clientDetected = true;
-    request->send(SPIFFS, "/web/htmx.js", "text/javascript");
+    request->send(SPIFFS, "/web/shared/htmx.js", "text/javascript");
   });
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     //Serial.println("showing redesign page");
     clientDetected = true;
-    request->send(SPIFFS, "/web/web_cfg.htm", String(), false, inputProcessor);
+    request->send(SPIFFS, "/web/shared/web_cfg.htm", String(), false, createDefaultProcessor());
   });
 
   server.on("/input.htm", HTTP_GET, [](AsyncWebServerRequest *request){
     //Serial.println("showing input page");
     clientDetected = true;
-    request->send(SPIFFS, "/web/input.htm", String(), false, inputProcessor);
+    request->send(SPIFFS, "/web/input/input.htm", String(), false, createProcessor(0, INPUT_PROCESSOR));
+  });
+
+  server.on("/outputs.htm", HTTP_GET, [](AsyncWebServerRequest *request){
+    //Serial.println("showing input page");
+    clientDetected = true;
+    request->send(SPIFFS, "/web/outputs/outputs.htm", String(), false, createProcessor(0, OUTPUT_BASE_PROCESSOR));
+  });
+
+  server.on("/levels.htm", HTTP_GET, [](AsyncWebServerRequest *request){
+    //Serial.println("showing input page");
+    clientDetected = true;
+    request->send(SPIFFS, "/web/levels/levels.htm", String(), false, createProcessor(0, LEVEL_PROCESSOR));
   });
 
   for(int i = 0; i < NUM_LEVELS; i++){
@@ -80,7 +92,7 @@ void SetupWifi(Config cfg){
     server.on(path.c_str(), HTTP_GET, [i](AsyncWebServerRequest *request){
       //Serial.println("showing level" + String(i + 1) + " page");
       clientDetected = true;
-      request->send(SPIFFS, "/web/level.htm", String(), false, createLevelProcessor(i));
+      request->send(SPIFFS, "/web/levels/level.htm", String(), false, createProcessor(i, LEVEL_PROCESSOR));
     });
   }
 
@@ -89,14 +101,61 @@ void SetupWifi(Config cfg){
     server.on(path.c_str(), HTTP_GET, [i](AsyncWebServerRequest *request){
       //Serial.println("showing output" + String(i + 1) + " page");
       clientDetected = true;
-      request->send(SPIFFS, "/web/output.htm", String(), false, createOutputProcessor(i));
+      request->send(SPIFFS, "/web/outputs/base_output.htm", String(), false, createProcessor(i, OUTPUT_BASE_PROCESSOR));
+    });
+  }
+
+  for(int i = 0; i < MAX_CHANNELS; i++){
+    String path = "/outputType" + String(i + 1) + ".htm";
+    server.on(path.c_str(), HTTP_GET, [i](AsyncWebServerRequest *request){
+      clientDetected = true;
+      //Serial.println("showing output" + String(i + 1) + " page");
+
+      String paramValue = "single";
+      if (request->hasParam("out_type")) {
+        paramValue = request->getParam("out_type")->value();
+      }
+      
+      if (paramValue != "strip") {
+        request->send(SPIFFS, "/web/outputs/role_output.htm", String(), false, createProcessor(i, OUTPUT_ROLE_PROCESSOR));
+      }else{
+        request->send(SPIFFS, "/web/outputs/strip_output.htm", String(), false, createProcessor(i, OUTPUT_STRIP_PROCESSOR));
+      }  
+    });
+  }
+
+  for(int i = 0; i < MAX_CHANNELS; i++){
+    String path = "/outputAnimation" + String(i + 1) + ".htm";
+    server.on(path.c_str(), HTTP_GET, [i](AsyncWebServerRequest *request){
+      clientDetected = true;
+      //Serial.println("showing output" + String(i + 1) + " page");
+
+      String paramValue = "underglow";
+      if (request->hasParam("out_animation")) {
+        paramValue = request->getParam("out_animation")->value();
+      }
+
+      switch(GetStripAnimationFromString(paramValue.c_str())){
+        case UNDERGLOW:
+          request->send(SPIFFS, "/web/anim/underglow.htm", String(), false, createProcessor(i, OUTPUT_UNDERGLOW_PROCESSOR));
+          break;
+        case THROTTLE_BRAKE:
+          request->send(SPIFFS, "/web/anim/throttle_brake.htm", String(), false, createProcessor(i, OUTPUT_THROTTLE_BRAKE_PROCESSOR));
+          break;
+        case EXHAUST:
+          request->send(SPIFFS, "/web/anim/exhaust.htm", String(), false, createProcessor(i, OUTPUT_EXHAUST_PROCESSOR));
+          break;
+        case EMERGENCY:
+          request->send(SPIFFS, "/web/anim/emergency.htm", String(), false, createProcessor(i, OUTPUT_EMERGENCY_PROCESSOR));
+          break;
+      }
     });
   }
 
   server.on("/utility.htm", HTTP_GET, [](AsyncWebServerRequest *request){
     //Serial.println("showing utility page");
     clientDetected = true;
-    request->send(SPIFFS, "/web/utility.htm", String(), false, inputProcessor);
+    request->send(SPIFFS, "/web/utility/utility.htm", String(), false, createDefaultProcessor());
   });
 
   server.on("/loadDefaults", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -106,7 +165,7 @@ void SetupWifi(Config cfg){
     SaveConfig(webConfig);
     buildMaps(&webConfig);
     request->send(200);
-    //SaveConfigWithRestart(webConfig);
+    SaveConfigWithRestart(webConfig);
   });
 
   //post requests
@@ -145,7 +204,7 @@ void SetupWifi(Config cfg){
     clientDetected = true;
     JsonDocument doc;
     deserializeJson(doc, (const char*)data);
-    parseOutConfig(&webConfig, doc);
+    parseOutConfig(&webConfig, doc, true);
     SaveConfig(webConfig);
     buildMaps(&webConfig);
     request->send(200);
@@ -155,7 +214,7 @@ void SetupWifi(Config cfg){
   server.on("/recover", HTTP_GET, [](AsyncWebServerRequest *request){
     clientDetected = true;
     Serial.println("recovering to defaults");
-    request->send(SPIFFS, "/web/recover.htm", String(), false, inputProcessor);
+    request->send(SPIFFS, "/web/utility/recover.htm", String(), false, createDefaultProcessor());
     webConfig = GetDefaultConfig();
     SaveConfigWithRestart(webConfig);
   });
@@ -166,8 +225,8 @@ void SetupWifi(Config cfg){
     webConfig = GetDefaultConfig();
     SaveConfig(webConfig);
     buildMaps(&webConfig);
-    request->send(SPIFFS, "/web/web_cfg.htm", String(), false, inputProcessor);
-    //SaveConfigWithRestart(webConfig);
+    request->send(SPIFFS, "/web/shared/web_cfg.htm", String(), false, createDefaultProcessor());
+    SaveConfigWithRestart(webConfig);
   });
 
   server.on("/powerCycle", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -210,7 +269,7 @@ void SetupWifi(Config cfg){
       SaveConfig(webConfig);
       buildMaps(&webConfig);
       request->send(200);
-      //SaveConfigWithRestart(webConfig);
+      SaveConfigWithRestart(webConfig);
     }
   });
 

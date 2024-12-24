@@ -87,7 +87,7 @@ function importConfig() {
 }
 
 function submitFormAsJson() {
-    var r = confirm("Are you sure you want to apply changes (only visible tab)? Controller will restart.");
+    var r = confirm("Are you sure you want to apply changes (only visible tab)? Power cycle required to see changes.");
     if (r == true) {
         var form = document.getElementById('configForm');
         var formData = new FormData(form);
@@ -107,25 +107,18 @@ function submitFormAsJson() {
     }
 }
 
-function showHideFieldSets(){
-    typeValue = document.getElementById('out_type');
-    if (typeValue.value == 'single') {
-        document.getElementById('out_single_fields').style.display = 'block';
-        document.getElementById('out_strip_fields').style.display = 'none';
-    } else if (typeValue.value == 'strip') {
-        document.getElementById('out_single_fields').style.display = 'none';
-        document.getElementById('out_strip_fields').style.display = 'block';
+function loadDefaultFields() {
+    var selectElement = document.getElementById("out_type");
+    var stripFields = document.getElementById("out_animation");
+    var animationFields = document.getElementById("animation_fields");
+    var roles = document.getElementById("out_role_fields");
+    if (selectElement && !(stripFields || roles)) { //Load default if one not already shown
+        htmx.trigger(selectElement, "change");
     }
 
-    document.getElementById('out_type').addEventListener('change', function() {
-        if (this.value == 'single') {
-            document.getElementById('out_single_fields').style.display = 'block';
-            document.getElementById('out_strip_fields').style.display = 'none';
-        } else if (this.value == 'strip') {
-            document.getElementById('out_single_fields').style.display = 'none';
-            document.getElementById('out_strip_fields').style.display = 'block';
-        }
-    });
+    if (stripFields && !animationFields) { //Load default if one not already shown
+        htmx.trigger(stripFields, "change");
+    }
 }
 
 function loadDefaultTab(){
@@ -175,7 +168,7 @@ function loadDefaultTab(){
 
     out1Button = document.getElementById('output1TabButton');
     firstLoadOutput = true;
-    for (let i = 1; i <= 12; i++) {
+    for (let i = 1; i <= 16; i++) { // MAX CHANNELS MUST BE UPDATED HERE
         let div = document.getElementById(`out_${i}_tab`);
         if (div) {
             firstLoadOutput = false;

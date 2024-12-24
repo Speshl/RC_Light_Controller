@@ -7,12 +7,12 @@
 #include <ArduinoJson.h> // ArduinoJson library
 
 #define ENABLE_FORCE_CONFIG true
-#define DEFAULT_CONFIG_FILE_PATH "/defaults/default.json"
+#define DEFAULT_CONFIG_FILE_PATH "/config/default.json"
 #define CONFIG_FILE_PATH "/config/config.json"
 #define FORCE_FILE_PATH "/config/forced.json"
 
 #define ENABLE_DEMO_MODE true
-#define TIME_TIL_DEMO 15000
+#define TIME_TIL_DEMO 1000
 
 //led strip configs
 #define COLOR_ORDER RGB
@@ -26,23 +26,46 @@
 #define SERIAL2_TX 17
 #define ENABLE_FAST_SBUS false
 
+//Pinout order for stacked narrow version: 32,33,25,26,27,14,12,13,4,5,18,19
+//Pinout order for 16c version: 32,33,25,26,27,14,12,13,4,5,18,19,23,22,21,2
+#define MAX_CHANNELS 16
 
-//OUTPUT CONFIG
-#define MAX_CHANNELS 12
+#define OUTPUT_PIN_1 13
+#define OUTPUT_PIN_2 12
+#define OUTPUT_PIN_3 14
+#define OUTPUT_PIN_4 27
+#define OUTPUT_PIN_5 26
+#define OUTPUT_PIN_6 25
+#define OUTPUT_PIN_7 33
+#define OUTPUT_PIN_8 32
 
-#define OUTPUT_PIN_1 32
-#define OUTPUT_PIN_2 33
-#define OUTPUT_PIN_3 25
-#define OUTPUT_PIN_4 26
-#define OUTPUT_PIN_5 27
-#define OUTPUT_PIN_6 14
-#define OUTPUT_PIN_7 12
-#define OUTPUT_PIN_8 13
-#define OUTPUT_PIN_9 4
-#define OUTPUT_PIN_10 5
-#define OUTPUT_PIN_11 18
-#define OUTPUT_PIN_12 19
-const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};
+#define OUTPUT_PIN_9 2
+#define OUTPUT_PIN_10 4
+#define OUTPUT_PIN_11 5
+#define OUTPUT_PIN_12 18
+#define OUTPUT_PIN_13 19
+#define OUTPUT_PIN_14 21
+#define OUTPUT_PIN_15 22
+#define OUTPUT_PIN_16 23
+
+const byte pinNums[MAX_CHANNELS] = {
+  OUTPUT_PIN_1,
+  OUTPUT_PIN_2,
+  OUTPUT_PIN_3,
+  OUTPUT_PIN_4,
+  OUTPUT_PIN_5,
+  OUTPUT_PIN_6,
+  OUTPUT_PIN_7,
+  OUTPUT_PIN_8,
+  OUTPUT_PIN_9,
+  OUTPUT_PIN_10,
+  OUTPUT_PIN_11,
+  OUTPUT_PIN_12,
+  OUTPUT_PIN_13,
+  OUTPUT_PIN_14,
+  OUTPUT_PIN_15,
+  OUTPUT_PIN_16
+  }; //32,33,25,26,27,14,12,13,4,5,18,19
 
 #define NUM_STRIP_LEDS 100
 
@@ -80,21 +103,24 @@ const byte pinNums[MAX_CHANNELS] = {32,33,25,26,27,14,12,13,4,5,18,19};
 
 #define MAX_EXHAUST_INTENSITY 1000
 
-#define POP_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 95) + INPUT_MID
+#define POP_EXHAUST_LEVEL_PERCENT 95
+#define POP_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * POP_EXHAUST_LEVEL_PERCENT) + INPUT_MID
 #define MAX_START_POP_EXHAUST_INTENSITY 1000
 #define MIN_START_POP_EXHAUST_INTENSITY 950
 #define MAX_CHANGE_POP_EXHAUST_INTENSITY 100 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_POP_EXHAUST_INTENSITY 50 //value is halfed on increase, full value used for decreases
 #define CHANCE_POP_EXHAUST_INTENSITY_INCREASE 30 //percent chance intensity will increase instead of decrease
 
-#define BRIGHT_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 80) + INPUT_MID
+#define BRIGHT_EXHAUST_LEVEL_PERCENT 80
+#define BRIGHT_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * BRIGHT_EXHAUST_LEVEL_PERCENT) + INPUT_MID
 #define MAX_START_BRIGHT_EXHAUST_INTENSITY 900
 #define MIN_START_BRIGHT_EXHAUST_INTENSITY 800
 #define MAX_CHANGE_BRIGHT_EXHAUST_INTENSITY 30 //value is halfed on increase, full value used for decreases
 #define MIN_CHANGE_BRIGHT_EXHAUST_INTENSITY 5 //value is halfed on increase, full value used for decreases
 #define CHANCE_BRIGHT_EXHAUST_INTENSITY_INCREASE 10 //percent chance intensity will increase instead of decrease
 
-#define DIM_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * 60) + INPUT_MID
+#define DIM_EXHAUST_LEVEL_PERCENT 60
+#define DIM_EXHAUST_LEVEL (((INPUT_HIGH - INPUT_MID) / 100) * DIM_EXHAUST_LEVEL_PERCENT) + INPUT_MID
 #define MAX_START_DIM_EXHAUST_INTENSITY 400
 #define MIN_START_DIM_EXHAUST_INTENSITY 200
 #define MAX_CHANGE_DIM_EXHAUST_INTENSITY 40 //value is halfed on increase, full value used for decreases
@@ -146,26 +172,17 @@ enum OutputType {
 
 enum StripAnimation {
   NONE,
-  UNDERGLOW_SOLID,
-  UNDERGLOW_BREATHE,
-  UNDERGLOW_CYCLE,
-  //UNDERGLOW_CHASE,
-  THROTTLE_BRAKE_LIGHT_BOTTOM,
-  THROTTLE_BRAKE_LIGHT_TOP,
-  THROTTLE_BRAKE_LIGHT_MIDDLE,
-  EXHAUST_FLAME,
-  POLICE_LIGHTS_SOLID,
-  POLICE_LIGHTS_WRAP,
-  CAUTION_LIGHTS_SOLID,
-  CAUTION_LIGHTS_WRAP,
+  UNDERGLOW,
+  THROTTLE_BRAKE,
+  EXHAUST,
+  EMERGENCY,
 };
 
 struct Animations{
   bool underglow;
   bool throttleBrakeLight;
   bool exhaustFlame;
-  bool policeLights;
-  bool cautionLights;
+  bool emergencyLights;
 };
 
 struct LevelConfig {
@@ -215,7 +232,6 @@ struct RoleStates{
 
 struct FlameState {
   int intensity;
-  CRGBPalette16 palette;
   FlameType type;
   FlameType lastType;
   unsigned long startTime;
@@ -224,15 +240,18 @@ struct FlameState {
 };
 
 struct UnderglowState {
-  CRGB color;
-  CRGBPalette16 palette;
+  int paletteBrightness;
   int palettePos;
+  int paletteSpeed;
+  
+  int breatheBrightness;
+  int breatheHold;
+  int breatheState;
 };
 
-struct PoliceState {
+struct EmergencyState {
   int strobePos;
   unsigned long lastStrobeChange;
-
   bool solidAlternateColor;
 };
 
@@ -242,7 +261,68 @@ struct AnimationState {
 
   FlameState flame;
   UnderglowState underglow;
-  PoliceState police;
+  EmergencyState emergency;
+};
+
+enum UnderGlowType {
+  UNDERGLOW_SOLID,
+  UNDERGLOW_BREATHE,
+  UNDERGLOW_PALETTE,
+};
+
+enum UnderGlowPalette {
+  UNDERGLOW_RAINBOW,
+  UNDERGLOW_CLOUD,
+  UNDERGLOW_LAVA,
+  UNDERGLOW_OCEAN,
+  UNDERGLOW_FOREST,
+  UNDERGLOW_PARTY,
+  UNDERGLOW_HEAT
+};
+
+struct UnderglowConfig {
+  UnderGlowType type;
+  CRGB primaryColor;
+  CRGB secondaryColor;
+  UnderGlowPalette palette;
+  uint8_t speed;
+};
+
+enum ThrottleBrakeType {
+  TB_TOP,
+  TB_MID,
+  TB_BOTTOM
+};
+
+struct ThrottleBrakeConfig {
+  ThrottleBrakeType type;
+  CRGB throttleColor;
+  CRGB brakeColor;
+};
+
+enum ExhaustPalette {
+  DEFAULT_EXHAUST_PALETTE,
+  BLUE_EXHAUST_PALETTE,
+  GREEN_EXHAUST_PALETTE,
+  PURPLE_EXHAUST_PALETTE,
+  CYAN_EXHAUST_PALETTE,
+  RAINBOW_EXHAUST_PALETTE,
+};
+
+struct ExhaustConfig {
+  ExhaustPalette palette;
+};
+
+enum EmergencyType {
+  EMERGENCY_SOLID,
+  EMERGENCY_WRAP
+};
+
+struct EmergencyConfig {
+  EmergencyType type;
+  CRGB primaryColor;
+  CRGB secondaryColor;
+  //uint8_t speed;
 };
 
 struct OutputChannelConfig {
@@ -251,8 +331,12 @@ struct OutputChannelConfig {
   StripAnimation stripAnimation;
   Roles roles;
   int stripLedCount;
-  CRGB color;
   EOrder colorOrder;
+
+  UnderglowConfig underglowConfig;
+  ThrottleBrakeConfig throttleBrakeConfig;
+  ExhaustConfig exhaustConfig;
+  EmergencyConfig emergencyConfig;
 };
 
 struct OutputConfig {
@@ -297,12 +381,14 @@ const char* ColorOrderToString(EOrder order);
 Config parseConfig(JsonDocument doc);
 void parseInputConfig(Config *cfg, JsonVariant doc);
 void parseLevelConfig(Config *cfg, JsonVariant doc);
-void parseOutConfig(Config *cfg, JsonVariant doc);
+void parseOutConfig(Config *cfg, JsonVariant doc, bool web);
 
 JsonDocument ConfigToJson(Config *cfg);
 JsonDocument InputConfigToJson(Config *cfg);
 JsonDocument LevelConfigToJson(Config *cfg, int levelNum);
 JsonDocument OutConfigToJson(Config *cfg, int outNum);
+
+StripAnimation GetStripAnimationFromString(const std::string& value);
 
 void SaveConfig(Config cfg);
 

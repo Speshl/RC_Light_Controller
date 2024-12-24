@@ -7,20 +7,9 @@ Config GetBaseConfig(){
 
   cfg.sysConfig.forcedShutdown = false;
   
-  // Passenger side headlight (input side, furthest from usb port)
-  cfg.outputConfig.channelConfigs[0].pin = pinNums[0];
-  cfg.outputConfig.channelConfigs[1].pin = pinNums[1];
-  cfg.outputConfig.channelConfigs[2].pin = pinNums[2];
-  cfg.outputConfig.channelConfigs[3].pin = pinNums[3];
-  cfg.outputConfig.channelConfigs[4].pin = pinNums[4];
-  cfg.outputConfig.channelConfigs[5].pin = pinNums[5];
-  cfg.outputConfig.channelConfigs[6].pin = pinNums[6];
-  cfg.outputConfig.channelConfigs[7].pin = pinNums[7];
-  cfg.outputConfig.channelConfigs[8].pin = pinNums[8];
-  cfg.outputConfig.channelConfigs[9].pin = pinNums[9];
-  cfg.outputConfig.channelConfigs[10].pin = pinNums[10];
-  cfg.outputConfig.channelConfigs[11].pin = pinNums[11];
-
+  for(int i=0; i<MAX_CHANNELS; i++){
+    cfg.outputConfig.channelConfigs[i].pin = pinNums[i];
+  }
   return cfg;
 }
 
@@ -49,8 +38,8 @@ void SaveConfig(Config cfg){
 }
 
 void SaveConfigWithRestart(Config cfg){
-  cfg.sysConfig.forcedShutdown = true;
-  SaveConfig(cfg);
+  cfg.sysConfig.forcedShutdown = true; // TODO: Keep track of forcedShutdown
+//  SaveConfig(cfg);
   Serial.println("Restarting to apply new config...");
   ESP.restart();
 }
@@ -66,6 +55,7 @@ Config loadConfigFromFile(const char* filename) {
   JsonDocument doc;
 
   // Deserialize the JSON document
+  // Serial.println("Deserializing config file");
   DeserializationError error = deserializeJson(doc, file);
   if (error) {
     Serial.println("Failed to parse config file");
@@ -167,13 +157,6 @@ void PrintConfig(Config cfg){
     Serial.println(cfg.outputConfig.channelConfigs[i].roles.tail);\
     Serial.print("StripLEDCount: ");
     Serial.println(cfg.outputConfig.channelConfigs[i].stripLedCount);
-    Serial.print("Color: ");
-    Serial.print("R: ");
-    Serial.print(cfg.outputConfig.channelConfigs[i].color.r);
-    Serial.print(", G: ");
-    Serial.print(cfg.outputConfig.channelConfigs[i].color.g);
-    Serial.print(", B: ");
-    Serial.println(cfg.outputConfig.channelConfigs[i].color.b);
   }
 
   Serial.println("Level Config:");
@@ -206,9 +189,7 @@ void PrintConfig(Config cfg){
     Serial.println(cfg.levelConfigs[i].animations.underglow);
     Serial.print(" Throttle Brake Light: ");
     Serial.println(cfg.levelConfigs[i].animations.throttleBrakeLight);
-    Serial.print(" Police Lights: ");
-    Serial.println(cfg.levelConfigs[i].animations.policeLights);
-    Serial.print(" Caution Lights: ");
-    Serial.println(cfg.levelConfigs[i].animations.cautionLights);
+    Serial.print(" Emergency Lights: ");
+    Serial.println(cfg.levelConfigs[i].animations.emergencyLights);
   }
 }

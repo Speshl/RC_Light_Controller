@@ -10,6 +10,10 @@ void clearStrip(int channel){
     }
 }
 
+void setLedColor(int channel, int led, CRGB color){
+    led_strips[channel][led] = color;
+}
+
 CRGB reorderColor(CRGB color, EOrder order){
     CRGB newColor = CRGB::Black;
     switch(order){
@@ -38,353 +42,6 @@ CRGB reorderColor(CRGB color, EOrder order){
             break;
     }
     return newColor;
-}
-
-//The order in which roles are handled is important. Higher priority roles should be handled first, and lower priority roles should be handled last.
-void showSingleLED(State* state, int channel){
-
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled){
-        analogWrite(channelCfg.pin, 0);
-        return;
-    }
-
-    if(channelCfg.roles.hazard && levelCfg.roles.hazard && state->inputState.hazards){
-        if(state->animationState.roleStates.hazards.blinkOn){
-            analogWrite(channelCfg.pin, 255);
-        }else{
-            analogWrite(channelCfg.pin, 0);
-        }
-        return;
-    }
-
-    if(channelCfg.roles.brake && levelCfg.roles.brake && state->inputState.brakes){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-
-    if(channelCfg.roles.leftTurn && levelCfg.roles.leftTurn && state->inputState.leftTurn){
-        if(state->animationState.roleStates.leftTurn.blinkOn){
-            analogWrite(channelCfg.pin, 255);
-        }else{
-            analogWrite(channelCfg.pin, 0);
-        }
-        return;
-    }
-
-    if(channelCfg.roles.rightTurn && levelCfg.roles.rightTurn && state->inputState.rightTurn){
-        if(state->animationState.roleStates.rightTurn.blinkOn){
-            analogWrite(channelCfg.pin, 255);
-        }else{
-            analogWrite(channelCfg.pin, 0);
-        }
-        return;
-    }
-
-    if(channelCfg.roles.strobe1 && levelCfg.roles.strobe1 && state->animationState.roleStates.strobe1.blinkOn){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-
-    if(channelCfg.roles.strobe2 && levelCfg.roles.strobe2 && state->animationState.roleStates.strobe2.blinkOn){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-
-    if((channelCfg.roles.strobe1 && levelCfg.roles.strobe1) || (channelCfg.roles.strobe2 && levelCfg.roles.strobe2)){
-        analogWrite(channelCfg.pin, 0); //override lower priority roles since this is a strobe, and our level has enabled strobes. Force off when lower priority roles might have kept it on.
-        return;
-    }
-
-    if(channelCfg.roles.head && levelCfg.roles.head){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-
-    if(channelCfg.roles.tail && levelCfg.roles.tail){
-        analogWrite(channelCfg.pin, 75); // low power for tail lights
-        return;
-    }
-
-    if(channelCfg.roles.reverse && levelCfg.roles.reverse && state->inputState.reverse){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-    
-    if(channelCfg.roles.running && levelCfg.roles.running){
-        analogWrite(channelCfg.pin, 100); // low power for running lights
-        return;
-    }
-
-    if(channelCfg.roles.aux1 && levelCfg.roles.aux1){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-
-    if(channelCfg.roles.aux2 && levelCfg.roles.aux2){
-        analogWrite(channelCfg.pin, 255);
-        return;
-    }
-
-    analogWrite(channelCfg.pin, 0); //turn off if nothing else matches
-    return;
-}
-
-void showUnderglowSolid(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.underglow){
-        clearStrip(channel);
-        return;
-    }
-
-    // Serial.print("UnderGlowSolid Channel: ");
-    // Serial.println(channel);
-    for(int i=0;i<NUM_STRIP_LEDS;i++){
-        led_strips[channel][i] = reorderColor(channelCfg.color, channelCfg.colorOrder);
-    }
-}
-
-void showUnderglowBreathe(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.underglow){
-        clearStrip(channel);
-        return;
-    }
-
-    int brightness = 127.5 * (1.0 + sin(millis() / 2000.0 * PI));
-    for(int i=0;i<NUM_STRIP_LEDS;i++){
-        led_strips[channel][i] = reorderColor(channelCfg.color.scale8(brightness), channelCfg.colorOrder);
-    }
-}
-
-void showUnderglowCycle(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.underglow){
-        clearStrip(channel);
-        return;
-    }
-
-    for(int i=0;i<NUM_STRIP_LEDS;i++){
-        led_strips[channel][i] = reorderColor(state->animationState.underglow.color, channelCfg.colorOrder);
-    }
-}
-
-void showThrottleBrakeLightBottom(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.throttleBrakeLight){
-        clearStrip(channel);
-        return;
-    }
-
-    int valuePerLed = (INPUT_HIGH - INPUT_MID) / channelCfg.stripLedCount;
-    int absValue = abs(state->inputValues.esc - INPUT_MID);
-    int numFullLeds = absValue / valuePerLed;
-    int partialBrightness = absValue % valuePerLed;
-
-    for(int i=0; i<channelCfg.stripLedCount; i++){
-        if(state->inputValues.esc < INPUT_MID){
-            if(i < numFullLeds){
-                led_strips[channel][i] = reorderColor(CRGB(255,0,0), channelCfg.colorOrder);
-            }else if(i == numFullLeds){
-                float percentBrightness = ((float)partialBrightness / (float)valuePerLed);
-                led_strips[channel][i] = reorderColor(CRGB(255*percentBrightness,0,0), channelCfg.colorOrder);
-            }else{
-                led_strips[channel][i] = CRGB::Black;
-            }
-        }else{
-            if(i < numFullLeds){
-                led_strips[channel][i] = reorderColor(CRGB(0,255,0), channelCfg.colorOrder);
-            }else if(i == numFullLeds){
-                float percentBrightness = ((float)partialBrightness / (float)valuePerLed);
-                led_strips[channel][i] = reorderColor(CRGB(0,255*percentBrightness,0), channelCfg.colorOrder);
-            }else{
-                led_strips[channel][i] = CRGB::Black;
-            }
-        }
-    }
-}
-
-void showThrottleBrakeLightTop(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.throttleBrakeLight){
-        clearStrip(channel);
-        return;
-    }
-
-    int valuePerLed = (INPUT_HIGH - INPUT_MID) / channelCfg.stripLedCount;
-    int absValue = abs(state->inputValues.esc - INPUT_MID);
-    int numFullLeds = absValue / valuePerLed;
-    int partialBrightness = absValue % valuePerLed;
-
-    for(int i=0; i<channelCfg.stripLedCount; i++){
-        if(state->inputValues.esc < INPUT_MID){
-            if(i < numFullLeds){
-                led_strips[channel][(channelCfg.stripLedCount-1)-i] = reorderColor(CRGB(255,0,0), channelCfg.colorOrder);
-            }else if(i == numFullLeds){
-                float percentBrightness = ((float)partialBrightness / (float)valuePerLed);
-                led_strips[channel][(channelCfg.stripLedCount-1)-i] = reorderColor(CRGB(255*percentBrightness,0,0), channelCfg.colorOrder);
-            }else{
-                led_strips[channel][(channelCfg.stripLedCount-1)-i] = CRGB::Black;
-            }
-        }else{
-            if(i < numFullLeds){
-                led_strips[channel][(channelCfg.stripLedCount-1)-i] = reorderColor(CRGB(0,255,0), channelCfg.colorOrder);
-            }else if(i == numFullLeds){
-                float percentBrightness = ((float)partialBrightness / (float)valuePerLed);
-                led_strips[channel][(channelCfg.stripLedCount-1)-i] = reorderColor(CRGB(0,255*percentBrightness,0), channelCfg.colorOrder);
-            }else{
-                led_strips[channel][(channelCfg.stripLedCount-1)-i] = CRGB::Black;
-            }
-        }
-    }
-}
-
-void showThrottleBrakeLightMid(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.throttleBrakeLight){
-        clearStrip(channel);
-        return;
-    }
-
-    int valuePerLed = (INPUT_HIGH - INPUT_MID) / channelCfg.stripLedCount;
-    int absValue = abs(state->inputValues.esc - INPUT_MID);
-    int numFullLeds = absValue / valuePerLed;
-    int partialBrightness = absValue % valuePerLed;
-
-    for(int i=0; i<channelCfg.stripLedCount/2; i++){
-        int leftIdx = (channelCfg.stripLedCount/2)-i-1;
-        int rightIdx = (channelCfg.stripLedCount/2)+i;
-
-        if(state->inputValues.esc < INPUT_MID){
-            if(i < numFullLeds){
-                led_strips[channel][leftIdx] = reorderColor(CRGB(255,0,0), channelCfg.colorOrder);
-                led_strips[channel][rightIdx] = reorderColor(CRGB(255,0,0), channelCfg.colorOrder);
-            }else if(i == numFullLeds){ 
-                float percentBrightness = ((float)partialBrightness / (float)valuePerLed);
-                led_strips[channel][leftIdx] = reorderColor(CRGB(255*percentBrightness,0,0), channelCfg.colorOrder);
-                led_strips[channel][rightIdx] = reorderColor(CRGB(255*percentBrightness,0,0), channelCfg.colorOrder);
-            }else{
-                led_strips[channel][leftIdx] = CRGB::Black;
-                led_strips[channel][rightIdx] = CRGB::Black;
-            }
-        }else{
-            if(i < numFullLeds){
-                led_strips[channel][leftIdx] = reorderColor(CRGB(0,255,0), channelCfg.colorOrder);
-                led_strips[channel][rightIdx] = reorderColor(CRGB(0,255,0), channelCfg.colorOrder);
-            }else if(i == numFullLeds){
-                float percentBrightness = ((float)partialBrightness / (float)valuePerLed);
-                led_strips[channel][leftIdx] = reorderColor(CRGB(0,255*percentBrightness,0), channelCfg.colorOrder);
-                led_strips[channel][rightIdx] = reorderColor(CRGB(0,255*percentBrightness,0), channelCfg.colorOrder);
-            }else{
-                led_strips[channel][leftIdx] = CRGB::Black;
-                led_strips[channel][rightIdx] = CRGB::Black;
-            }
-        }
-    }
-}
-
-void showExhaustFlame(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.exhaustFlame){
-        Serial.println("Flame Disabled");
-        clearStrip(channel);
-        return;
-    }
-
-    if(state->animationState.flame.intensity == 0 || state->animationState.flame.type == NO_FLAME){
-        //Serial.println("No Flame");
-        return clearStrip(channel);
-    }
-
-    // Serial.print("Flame Intensity: ");
-    // Serial.println(state->animationState.flameIntensity);
-    // Serial.print("Flame Type: ");
-    // Serial.println(state->animationState.currentFlameType);
-
-    uint8_t mappedIntensity = map(state->animationState.flame.intensity,0,MAX_EXHAUST_INTENSITY,0,255);
-    //CRGB flameColor = HeatColor(mappedIntensity);
-    CRGB flameColor = ColorFromPalette(state->animationState.flame.palette, mappedIntensity);
-    for(int i=0; i<NUM_STRIP_LEDS; i++){
-        led_strips[channel][i] = reorderColor(flameColor, channelCfg.colorOrder);
-    }
-}
-
-void showPoliceLightsSolid(State* state, int channel){
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.policeLights){
-        clearStrip(channel);
-        return;
-    }
-
-    CRGB color = CRGB::Red;
-    if(state->animationState.police.solidAlternateColor){
-        color = CRGB::Blue;
-    }
-
-    for(int i=0;i<NUM_STRIP_LEDS;i++){
-        led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
-    }
-}
-
-void showPoliceLightsWrap(State* state, int channel){ //Split
-    OutputChannelConfig channelCfg = state->config.outputConfig.channelConfigs[channel];
-    LevelConfig levelCfg = state->config.levelConfigs[state->inputState.level];
-
-    if(!state->inputState.enabled || !levelCfg.animations.policeLights){
-        clearStrip(channel);
-        return;
-    }
-
-    for(int i=0;i<channelCfg.stripLedCount;i++){
-        CRGB color = CRGB::Blue;
-        CRGB dimColor = CRGB::Black;
-        if(i > channelCfg.stripLedCount/2){
-            color = CRGB::Blue;
-            dimColor = CRGB::Black;
-        }
-
-        if((state->animationState.police.strobePos == 0 || state->animationState.police.strobePos == 2)){
-            if(i < channelCfg.stripLedCount/2){
-                led_strips[channel][i] = CRGB::Black;
-            }else{
-                led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
-            }
-        }else if((state->animationState.police.strobePos == 3 || state->animationState.police.strobePos == 5)){
-            if(i >= channelCfg.stripLedCount/2){
-                led_strips[channel][i] = CRGB::Black;
-            }else{
-                led_strips[channel][i] = reorderColor(color, channelCfg.colorOrder);
-            }
-        }else{
-            led_strips[channel][i] = CRGB::Black;
-        }
-    }
-}
-
-void showCautionLightsSolid(State* state, int channel){
-    
-}
-
-void showCautionLightsWrap(State* state, int channel){
-    
 }
 
 // Public functions
@@ -420,6 +77,14 @@ void SetupOutput(Config cfg){
                 FastLED.addLeds<CHIPSET, OUTPUT_PIN_11, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
             }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_12){
                 FastLED.addLeds<CHIPSET, OUTPUT_PIN_12, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_13){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_13, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_14){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_14, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_15){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_15, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
+            }else if(cfg.outputConfig.channelConfigs[i].pin == OUTPUT_PIN_16){
+                FastLED.addLeds<CHIPSET, OUTPUT_PIN_16, COLOR_ORDER>(led_strips[i], NUM_STRIP_LEDS);
             }else{
                 Serial.print("Invalid pin for LED strip: ");
                 Serial.println(cfg.outputConfig.channelConfigs[i].pin);
@@ -428,8 +93,8 @@ void SetupOutput(Config cfg){
         }
     }
 
-    FastLED.setMaxPowerInVoltsAndMilliamps(VOLTS, MAX_AMPS);
-    FastLED.setBrightness(BRIGHTNESS);
+    //FastLED.setMaxPowerInVoltsAndMilliamps(VOLTS, MAX_AMPS); //Not using due to issues with fading
+    FastLED.setBrightness(BRIGHTNESS); // Make configurable on the global animation tab
     FastLED.clear();
     FastLED.show();
 }
@@ -453,45 +118,21 @@ void ShowState(State* state){
 
         switch(state->config.outputConfig.channelConfigs[i].type){
             case SINGLE_LED:
-                showSingleLED(state, i);
+                showRole(state, i);
                 break;
             case LED_STRIP:
                 switch(state->config.outputConfig.channelConfigs[i].stripAnimation){
-                    case UNDERGLOW_SOLID:
-                        showUnderglowSolid(state, i);
+                    case UNDERGLOW:
+                        showUnderglow(state, i);
                         break;
-                    case UNDERGLOW_BREATHE:
-                        showUnderglowBreathe(state, i);
+                    case THROTTLE_BRAKE:
+                        showThrottleBrakeLight(state, i);
                         break;
-                    case UNDERGLOW_CYCLE:
-                        showUnderglowCycle(state, i);
-                        break;
-                    //case UNDERGLOW_CHASE:
-                        //showUnderglowChase(state, i);
-                        //break;
-                    case THROTTLE_BRAKE_LIGHT_BOTTOM:
-                        showThrottleBrakeLightBottom(state, i);
-                        break;
-                    case THROTTLE_BRAKE_LIGHT_TOP:
-                        showThrottleBrakeLightTop(state, i);
-                        break;
-                    case THROTTLE_BRAKE_LIGHT_MIDDLE:
-                        showThrottleBrakeLightMid(state, i);
-                        break;
-                    case EXHAUST_FLAME:
+                    case EXHAUST:
                         showExhaustFlame(state, i);
                         break;
-                    case POLICE_LIGHTS_SOLID:
-                        showPoliceLightsSolid(state, i);
-                        break;
-                    case POLICE_LIGHTS_WRAP:
-                        showPoliceLightsWrap(state, i);
-                        break;
-                    case CAUTION_LIGHTS_SOLID:
-                        showCautionLightsSolid(state, i);
-                        break;
-                    case CAUTION_LIGHTS_WRAP:
-                        showCautionLightsWrap(state, i);
+                    case EMERGENCY:
+                        showEmergencyLights(state, i);
                         break;
                     default:
                         //Serial.println("Invalid strip animation");
